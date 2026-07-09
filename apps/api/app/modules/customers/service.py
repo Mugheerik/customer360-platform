@@ -1,42 +1,53 @@
+import logging
+
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import CustomerNotFoundError
-from app.modules.customers.models import Customer
 from app.modules.customers.repository import CustomerRepository
-from app.modules.customers.schemas import CustomerCreate, CustomerUpdate
+from app.modules.customers.schemas import (
+    CustomerCreate,
+    CustomerResponse,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class CustomerService:
+    """
+    Business logic for customer operations.
+    """
+
     def __init__(self, db: Session):
         self.repository = CustomerRepository(db)
 
-    def create_customer(self, customer: CustomerCreate) -> Customer:
-        return self.repository.create(customer)
-
-    def get_customers(self) -> list[Customer]:
-        return self.repository.get_all()
-
-    def get_customer(self, customer_id: str) -> Customer:
-        customer = self.repository.get_by_id(customer_id)
-
-        if customer is None:
-            raise CustomerNotFoundError(customer_id)
-
-        return customer
-
-    def update_customer(
+    def create_customer(
         self,
-        customer_id: str,
-        data: CustomerUpdate,
-    ) -> Customer:
-        customer = self.get_customer(customer_id)
+        customer: CustomerCreate,
+    ) -> CustomerResponse:
+        logger.info(
+            "Creating customer with email '%s'",
+            customer.email,
+        )
 
-        return self.repository.update(customer, data)
+        created_customer = self.repository.create(customer)
 
-    def deactivate_customer(
-        self,
-        customer_id: str,
-    ) -> Customer:
-        customer = self.get_customer(customer_id)
+        logger.info(
+            "Customer '%s' created successfully",
+            created_customer.id,
+        )
 
-        return self.repository.deactivate(customer)
+        return CustomerResponse.model_validate(created_customer)
+
+    def list_active_customers(self) -> list[CustomerResponse]:
+        logger.info("Fetching active customers")
+
+        customers = self.repository.get_active_customers()
+
+        logger.info(
+            "Retrieved %s active customers",
+            len(customers),
+        )
+
+        return [
+            CustomerResponse.model_validate(customer)
+            for customer in customers
+        ]
