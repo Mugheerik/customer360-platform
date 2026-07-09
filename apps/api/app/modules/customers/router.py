@@ -20,12 +20,27 @@ def create_customer(
     customer: CustomerCreate,
     db: Session = Depends(get_db),
 ) -> CustomerResponse:
-    """
-    Create a new customer.
-    """
 
     service = CustomerService(db)
 
     created_customer = service.create_customer(customer)
 
     return CustomerResponse.model_validate(created_customer)
+
+
+@router.get(
+    "",
+    response_model=list[CustomerResponse],
+)
+def get_customers(
+    db: Session = Depends(get_db),
+) -> list[CustomerResponse]:
+
+    service = CustomerService(db)
+
+    customers = service.get_customers()
+
+    return [
+        CustomerResponse.model_validate(customer)
+        for customer in customers
+    ]

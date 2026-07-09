@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.customers.models import Customer
@@ -23,9 +24,16 @@ class CustomerRepository:
         )
 
         self.db.add(db_customer)
-
         self.db.commit()
-
         self.db.refresh(db_customer)
 
         return db_customer
+
+    def get_all(self) -> list[Customer]:
+        """
+        Retrieve all customers.
+        """
+
+        statement = select(Customer)
+
+        return list(self.db.scalars(statement).all())
