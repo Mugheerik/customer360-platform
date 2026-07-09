@@ -1,25 +1,21 @@
+from sqlalchemy.orm import Session
+
+from app.modules.customers.repository import CustomerRepository
 from app.modules.customers.schema import CustomerCreate
+from app.modules.customers.models import Customer
 
 
 class CustomerService:
     """
     Handles customer business logic.
-
-    Database operations will be introduced later.
-    For now, this layer demonstrates separation
-    between API and business rules.
     """
 
-    def create_customer(
-        self,
-        customer: CustomerCreate
-    ):
-        """
-        Creates a customer.
+    def __init__(self, db: Session):
+        self.repository = CustomerRepository(db)
 
-        Currently returns validated input.
-        Database persistence will be added
-        in the database engineering phase.
+    def create_customer(self, customer: CustomerCreate) -> Customer:
+        """
+        Create a new customer.
         """
 
-        return customer
+        return self.repository.create(customer)

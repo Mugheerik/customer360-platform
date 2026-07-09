@@ -20,9 +20,13 @@ class CustomerCreate(BaseModel):
 class CustomerResponse(BaseModel):
     """
     Schema used when returning customer information.
-
+    
     This represents data exposed by the API.
     """
+    model_config = {
+    "from_attributes": True
+    } 
+
 
     id: UUID
     first_name: str
