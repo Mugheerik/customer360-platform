@@ -1,18 +1,31 @@
+from sqlalchemy.orm import Session
+
+from app.modules.customers.models import Customer
+from app.modules.customers.schema import CustomerCreate
+
+
 class CustomerRepository:
+    """
+    Handles all database operations
+    related to customers.
+    """
 
-    def get_all(self):
+    def __init__(self, db: Session):
+        self.db = db
 
-        return [
-            {
-                "id": 1,
-                "first_name": "Ali",
-                "last_name": "Khan",
-                "email": "ali@example.com"
-            },
-            {
-                "id": 2,
-                "first_name": "Sara",
-                "last_name": "Ahmed",
-                "email": "sara@example.com"
-            }
-        ]
+    def create(self, customer: CustomerCreate) -> Customer:
+
+        db_customer = Customer(
+            first_name=customer.first_name,
+            last_name=customer.last_name,
+            email=customer.email,
+            phone=customer.phone,
+        )
+
+        self.db.add(db_customer)
+
+        self.db.commit()
+
+        self.db.refresh(db_customer)
+
+        return db_customer
