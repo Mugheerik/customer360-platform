@@ -25,10 +25,14 @@ class CustomerRepository:
 
     def get_all(self) -> list[Customer]:
         statement = select(Customer)
+
         return list(self.db.scalars(statement).all())
 
     def get_by_id(self, customer_id: str) -> Customer | None:
-        statement = select(Customer).where(Customer.id == customer_id)
+        statement = select(Customer).where(
+            Customer.id == customer_id
+        )
+
         return self.db.scalar(statement)
 
     def update(
@@ -41,6 +45,17 @@ class CustomerRepository:
         customer.email = data.email
         customer.phone = data.phone
         customer.status = data.status
+
+        self.db.commit()
+        self.db.refresh(customer)
+
+        return customer
+
+    def deactivate(
+        self,
+        customer: Customer,
+    ) -> Customer:
+        customer.status = "inactive"
 
         self.db.commit()
         self.db.refresh(customer)

@@ -35,3 +35,11 @@ class CustomerService:
         customer = self.get_customer(customer_id)
 
         return self.repository.update(customer, data)
+
+    def deactivate_customer(
+        self,
+        customer_id: str,
+    ) -> Customer:
+        customer = self.get_customer(customer_id)
+
+        return self.repository.deactivate(customer)

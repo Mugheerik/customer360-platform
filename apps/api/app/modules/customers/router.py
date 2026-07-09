@@ -77,3 +77,18 @@ def update_customer(
     )
 
     return CustomerResponse.model_validate(updated_customer)
+
+
+@router.delete(
+    "/{customer_id}",
+    response_model=CustomerResponse,
+)
+def deactivate_customer(
+    customer_id: str,
+    db: Session = Depends(get_db),
+) -> CustomerResponse:
+    service = CustomerService(db)
+
+    customer = service.deactivate_customer(customer_id)
+
+    return CustomerResponse.model_validate(customer)
