@@ -24,13 +24,18 @@ class CustomerRepository:
         return db_customer
 
     def get_all(self) -> list[Customer]:
-        statement = select(Customer)
+        statement = (
+            select(Customer)
+            .where(Customer.status == "active")
+            .order_by(Customer.created_at.desc())
+        )
 
         return list(self.db.scalars(statement).all())
 
     def get_by_id(self, customer_id: str) -> Customer | None:
-        statement = select(Customer).where(
-            Customer.id == customer_id
+        statement = (
+            select(Customer)
+            .where(Customer.id == customer_id)
         )
 
         return self.db.scalar(statement)
