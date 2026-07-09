@@ -1,36 +1,31 @@
 from datetime import datetime
-from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class CustomerCreate(BaseModel):
-    """
-    Schema used when creating a new customer.
-
-    This represents data that the API accepts from external clients.
-    """
-
     first_name: str
     last_name: str
     email: EmailStr
     phone: str | None = None
+
+
+class CustomerUpdate(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone: str | None = None
+    status: str
 
 
 class CustomerResponse(BaseModel):
-    """
-    Schema used when returning customer information.
-    
-    This represents data exposed by the API.
-    """
-    model_config = {
-    "from_attributes": True
-    } 
+    model_config = ConfigDict(from_attributes=True)
 
-
-    id: UUID
+    id: str
     first_name: str
     last_name: str
     email: EmailStr
-    phone: str | None = None
+    phone: str | None
+    status: str
     created_at: datetime
+    updated_at: datetime

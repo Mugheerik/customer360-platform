@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
-from app.modules.customers.schema import CustomerCreate, CustomerResponse
+from app.modules.customers.schema import (
+    CustomerCreate,
+    CustomerResponse,
+    CustomerUpdate,
+)
 from app.modules.customers.service import CustomerService
 
 router = APIRouter(
@@ -20,12 +24,10 @@ def create_customer(
     customer: CustomerCreate,
     db: Session = Depends(get_db),
 ) -> CustomerResponse:
-
     service = CustomerService(db)
-
-    created_customer = service.create_customer(customer)
-
-    return CustomerResponse.model_validate(created_customer)
+    return CustomerResponse.model_validate(
+        service.create_customer(customer)
+    )
 
 
 @router.get(
@@ -35,14 +37,11 @@ def create_customer(
 def get_customers(
     db: Session = Depends(get_db),
 ) -> list[CustomerResponse]:
-
     service = CustomerService(db)
-
-    customers = service.get_customers()
 
     return [
         CustomerResponse.model_validate(customer)
-        for customer in customers
+        for customer in service.get_customers()
     ]
 
 
@@ -54,9 +53,27 @@ def get_customer(
     customer_id: str,
     db: Session = Depends(get_db),
 ) -> CustomerResponse:
-
     service = CustomerService(db)
 
-    customer = service.get_customer(customer_id)
+    return CustomerResponse.model_validate(
+        service.get_customer(customer_id)
+    )
 
-    return CustomerResponse.model_validate(customer)
+
+@router.put(
+    "/{customer_id}",
+    response_model=CustomerResponse,
+)
+def update_customer(
+    customer_id: str,
+    customer: CustomerUpdate,
+    db: Session = Depends(get_db),
+) -> CustomerResponse:
+    service = CustomerService(db)
+
+    updated_customer = service.update_customer(
+        customer_id,
+        customer,
+    )
+
+    return CustomerResponse.model_validate(updated_customer)
