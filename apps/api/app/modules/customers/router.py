@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
-from app.modules.customers.schema import (
+from app.modules.customers.schemas import (
     CustomerCreate,
     CustomerResponse,
     CustomerUpdate,

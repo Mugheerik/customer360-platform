@@ -4,22 +4,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """
     Application configuration.
-
-    Values are loaded from environment variables
-    and the .env file.
     """
 
-    APP_NAME: str = "Customer360 API"
-    APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
+    app_name: str = "Customer360 API"
+    app_version: str = "0.4.0"
+    debug: bool = True
 
-    DATABASE_URL: str = (
-        "postgresql://postgres:postgres@localhost:5432/customer360"
-    )
+    database_url: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        case_sensitive=True,
+        case_sensitive=False,
     )
 
 

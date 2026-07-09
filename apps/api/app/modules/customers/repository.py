@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.customers.models import Customer
-from app.modules.customers.schema import CustomerCreate, CustomerUpdate
+from app.modules.customers.schemas import CustomerCreate, CustomerUpdate
 
 
 class CustomerRepository:
