@@ -1,19 +1,27 @@
 from fastapi import APIRouter
 
+from app.modules.customers.schema import CustomerCreate
 from app.modules.customers.service import CustomerService
+
 
 router = APIRouter(
     prefix="/customers",
-    tags=["Customers"]
+    tags=["customers"]
 )
+
 
 customer_service = CustomerService()
 
 
-@router.get(
-    "",
-    summary="List customers"
-)
-def list_customers():
+@router.post("")
+def create_customer(
+    customer: CustomerCreate
+):
+    """
+    Create a new customer.
 
-    return customer_service.get_all_customers()
+    Request data is validated by Pydantic
+    before reaching this function.
+    """
+
+    return customer_service.create_customer(customer)

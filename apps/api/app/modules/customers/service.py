@@ -1,16 +1,25 @@
-from app.modules.customers.repository import CustomerRepository
+from app.modules.customers.schema import CustomerCreate
 
 
 class CustomerService:
+    """
+    Handles customer business logic.
 
-    def __init__(self):
-        self.repository = CustomerRepository()
+    Database operations will be introduced later.
+    For now, this layer demonstrates separation
+    between API and business rules.
+    """
 
-    def get_all_customers(self):
+    def create_customer(
+        self,
+        customer: CustomerCreate
+    ):
+        """
+        Creates a customer.
 
-        customers = self.repository.get_all()
+        Currently returns validated input.
+        Database persistence will be added
+        in the database engineering phase.
+        """
 
-        return {
-            "customers": customers,
-            "total": len(customers)
-        }
+        return customer
