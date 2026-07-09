@@ -1,10 +1,13 @@
 from fastapi import FastAPI
+
+from app.core.exception_handlers import register_exception_handlers
 from app.entrypoints.http import api_router
 
 app = FastAPI(
     title="Customer360 API",
-    description="Enterprise Customer360 Platform",
-    version="0.1.0",
+    version="0.3.0",
 )
+
+register_exception_handlers(app)
 
 app.include_router(api_router)
