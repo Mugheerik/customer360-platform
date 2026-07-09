@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.modules.customers.models import Customer
@@ -23,3 +24,18 @@ class CustomerService:
     def get_customers(self) -> list[Customer]:
 
         return self.repository.get_all()
+
+    def get_customer(
+        self,
+        customer_id: str,
+    ) -> Customer:
+
+        customer = self.repository.get_by_id(customer_id)
+
+        if customer is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Customer not found.",
+            )
+
+        return customer

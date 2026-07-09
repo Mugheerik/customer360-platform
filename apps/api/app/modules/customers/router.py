@@ -44,3 +44,19 @@ def get_customers(
         CustomerResponse.model_validate(customer)
         for customer in customers
     ]
+
+
+@router.get(
+    "/{customer_id}",
+    response_model=CustomerResponse,
+)
+def get_customer(
+    customer_id: str,
+    db: Session = Depends(get_db),
+) -> CustomerResponse:
+
+    service = CustomerService(db)
+
+    customer = service.get_customer(customer_id)
+
+    return CustomerResponse.model_validate(customer)
