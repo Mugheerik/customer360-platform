@@ -1,5 +1,12 @@
-![CI](https://github.com/Mugheerik/customer360-platform/actions/workflows/ci.yml/badge.svg)
 # Customer360 Platform
+
+[![CI](https://github.com/Mugheerik/customer360-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Mugheerik/customer360-platform/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.13-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791.svg)
+![License](https://img.shields.io/github/license/Mugheerik/customer360-platform)
+![Release](https://img.shields.io/github/v/release/Mugheerik/customer360-platform)
+![Status](https://img.shields.io/badge/status-active%20development-brightgreen)
 
 > A production-style Customer Data Platform (CDP) built with modern Python technologies and engineering best practices.
 
