@@ -1,3 +1,4 @@
+![CI](https://github.com/Mugheerik/customer360-platform/actions/workflows/ci.yml/badge.svg)
 # Customer360 Platform
 
 > A production-style Customer Data Platform (CDP) built with modern Python technologies and engineering best practices.
