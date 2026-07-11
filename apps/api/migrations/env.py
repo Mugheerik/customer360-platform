@@ -7,11 +7,10 @@ from app.core.config import settings
 from app.database.base import Base
 
 # Import all SQLAlchemy models here
-from app.modules.customers.models import Customer
 
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -46,7 +45,6 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-
         context.configure(
             connection=connection,
             target_metadata=target_metadata,

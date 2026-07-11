@@ -1,0 +1,70 @@
+name: Customer360 CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: customer360
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd="pg_isready -U postgres -d customer360"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    defaults:
+      run:
+        working-directory: apps/api
+
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/customer360
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check Ruff
+        run: uv run ruff check .
+
+      - name: Check Formatting
+        run: uv run ruff format . --check
+
+      - name: Run Alembic Migrations
+        run: uv run alembic upgrade head
+
+      - name: Run Tests
+        working-directory: ../..
+        run: uv run pytest

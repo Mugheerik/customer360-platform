@@ -33,10 +33,7 @@ class CustomerRepository:
         return list(self.db.scalars(statement).all())
 
     def get_by_id(self, customer_id: str) -> Customer | None:
-        statement = (
-            select(Customer)
-            .where(Customer.id == customer_id)
-        )
+        statement = select(Customer).where(Customer.id == customer_id)
 
         return self.db.scalar(statement)
 

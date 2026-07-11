@@ -25,9 +25,7 @@ def create_customer(
     db: Session = Depends(get_db),
 ) -> CustomerResponse:
     service = CustomerService(db)
-    return CustomerResponse.model_validate(
-        service.create_customer(customer)
-    )
+    return CustomerResponse.model_validate(service.create_customer(customer))
 
 
 @router.get(
@@ -55,9 +53,7 @@ def get_customer(
 ) -> CustomerResponse:
     service = CustomerService(db)
 
-    return CustomerResponse.model_validate(
-        service.get_customer(customer_id)
-    )
+    return CustomerResponse.model_validate(service.get_customer(customer_id))
 
 
 @router.put(
