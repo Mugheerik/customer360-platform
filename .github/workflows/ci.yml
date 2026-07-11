@@ -13,6 +13,8 @@ on:
 
 jobs:
   test:
+    name: Test & Quality Checks
+
     runs-on: ubuntu-latest
 
     services:
@@ -41,7 +43,6 @@ jobs:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/customer360
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -54,17 +55,16 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --all-groups
 
-      - name: Check Ruff
+      - name: Run Ruff
         run: uv run ruff check .
 
-      - name: Check Formatting
+      - name: Check formatting
         run: uv run ruff format . --check
 
-      - name: Run Alembic Migrations
+      - name: Run database migrations
         run: uv run alembic upgrade head
 
-      - name: Run Tests
-        working-directory: ../..
-        run: uv run pytest
+      - name: Run tests
+        run: uv run pytest ../../tests
