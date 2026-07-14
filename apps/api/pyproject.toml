@@ -10,6 +10,7 @@ dependencies = [
     "fastapi>=0.139.0",
     "psycopg2-binary>=2.9.12",
     "psycopg[binary]>=3.3.4",
+    "pwdlib[argon2]>=0.3.0",
     "pydantic-settings>=2.14.2",
     "sqlalchemy>=2.0.51",
     "uvicorn[standard]>=0.50.2",
@@ -25,6 +26,11 @@ dev = [
 [tool.ruff]
 line-length = 88
 target-version = "py313"
+
+exclude = [
+    "migrations/versions",
+]
+
 
 [tool.ruff.lint]
 select = [

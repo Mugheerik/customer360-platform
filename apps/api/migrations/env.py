@@ -7,6 +7,10 @@ from app.core.config import settings
 from app.database.base import Base
 
 # Import all SQLAlchemy models here
+from app.modules.customers.models import Customer  # noqa: F401
+from app.modules.users.models import User  # noqa: F401
+
+# Import all SQLAlchemy models here
 
 config = context.config
 
