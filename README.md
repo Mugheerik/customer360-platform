@@ -12,6 +12,8 @@ A production-style **Customer Data Platform (CDP)** backend built with modern Py
 
 Customer360 Platform demonstrates how scalable backend services, data-centric applications, and analytics platforms are designed, built, tested, and maintained using a production-oriented software engineering workflow.
 
+Customer360 is an extensible business operating platform designed to centralize customer data, business workflows, analytics, automation, and AI capabilities through a unified backend architecture.
+
 Rather than being a simple CRUD application, the project emphasizes clean architecture, maintainability, automated testing, database versioning, code quality, and continuous integration—mirroring practices commonly used in professional software teams.
 
 The long-term vision is to evolve Customer360 into a production-grade Customer Data Platform featuring authentication, event ingestion, analytics, and customer intelligence services.
@@ -20,13 +22,17 @@ The long-term vision is to evolve Customer360 into a production-grade Customer D
 
 # Roadmap
 
-* ✅ **v0.1.0** — Production Backend Foundation
-* 🔄 **v0.2.0** — Authentication & Authorization
-* ⏳ **v0.3.0** — Orders & Products
-* ⏳ **v0.4.0** — Customer Search
-* ⏳ **v0.5.0** — Event Tracking
-* ⏳ **v0.6.0** — Analytics Engine
-* ⏳ **v1.0.0** — Customer360 MVP
+| Version | Milestone                 | Status         |
+| ------- | ------------------------- | -------------- |
+| v0.1.0  | Backend Foundation        | ✅ Complete     |
+| v0.2.0  | Authentication & Identity | 🚧 In Progress |
+| v0.3.0  | Customer Management       | ⏳ Planned      |
+| v0.4.0  | Identity Portal           | ⏳ Planned      |
+| v0.5.0  | Analytics Foundation      | ⏳ Planned      |
+| v0.6.0  | Automation Foundation     | ⏳ Planned      |
+| v0.7.0  | AI Services               | ⏳ Planned      |
+| v1.0.0  | Customer360 MVP           | 🎯 Target      |
+
 
 ---
 

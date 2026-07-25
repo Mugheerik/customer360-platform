@@ -45,3 +45,26 @@ class RegisterResponse(BaseModel):
     last_name: str
     is_active: bool
     is_superuser: bool
+
+
+
+class LoginRequest(BaseModel):
+    """
+    User login request.
+    """
+
+    email: EmailStr
+
+    password: str = Field(
+        min_length=8,
+        max_length=128,
+    )
+
+
+class LoginResponse(BaseModel):
+    """
+    User login response.
+    """
+
+    access_token: str
+    token_type: str = "bearer"

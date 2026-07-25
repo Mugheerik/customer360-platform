@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.modules.users.models import User
@@ -23,11 +25,15 @@ class UserRepository:
         """
         return self.db.query(User).filter(User.username == username).first()
 
-    def get_by_id(self, user_id: str) -> User | None:
+    def get_by_id(self, user_id: UUID) -> User | None:
         """
         Retrieve a user by ID.
         """
-        return self.db.query(User).filter(User.id == user_id).first()
+        return (
+            self.db.query(User)
+            .filter(User.id == user_id)
+            .first()
+        )
 
     def create(self, user: User) -> User:
         """
