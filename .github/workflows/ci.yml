@@ -41,12 +41,15 @@ jobs:
 
     env:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/customer360
+      JWT_SECRET_KEY: customer360-ci-secret-key-at-least-32-characters
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -62,6 +65,20 @@ jobs:
 
       - name: Check formatting
         run: uv run ruff format . --check
+
+      - name: Debug environment
+        shell: bash
+        run: |
+          echo "DATABASE_URL=$DATABASE_URL"
+          echo "JWT_ALGORITHM=$JWT_ALGORITHM"
+          echo "JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
+
+          if [ -n "$JWT_SECRET_KEY" ]; then
+            echo "✅ JWT_SECRET_KEY is set"
+          else
+            echo "❌ JWT_SECRET_KEY is MISSING"
+            exit 1
+          fi
 
       - name: Run database migrations
         run: uv run alembic upgrade head
