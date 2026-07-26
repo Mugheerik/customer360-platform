@@ -1,13 +1,42 @@
-from fastapi import APIRouter, Depends
+from uuid import UUID
 
-from app.core.security.dependencies import get_current_user
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.core.security.dependencies import (
+    get_current_user,
+    require_superuser,
+)
+from app.database.dependencies import get_db
 from app.modules.users.models import User
+from app.modules.users.repository import UserRepository
 from app.modules.users.schemas import UserResponse
+from app.modules.users.service import UserService
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
 )
+
+
+@router.get(
+    "",
+    response_model=list[UserResponse],
+)
+def list_users(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_superuser),
+) -> list[UserResponse]:
+    """
+    List all users.
+    """
+
+    repository = UserRepository(db)
+    service = UserService(repository)
+
+    users = service.list_users()
+
+    return [UserResponse.model_validate(user) for user in users]
 
 
 @router.get(
@@ -22,3 +51,24 @@ def get_me(
     """
 
     return UserResponse.model_validate(current_user)
+
+
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+)
+def get_user(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_superuser),
+) -> UserResponse:
+    """
+    Retrieve a user by ID.
+    """
+
+    repository = UserRepository(db)
+    service = UserService(repository)
+
+    user = service.get_user(user_id)
+
+    return UserResponse.model_validate(user)

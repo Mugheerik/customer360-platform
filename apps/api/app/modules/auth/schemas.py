@@ -47,7 +47,6 @@ class RegisterResponse(BaseModel):
     is_superuser: bool
 
 
-
 class LoginRequest(BaseModel):
     """
     User login request.

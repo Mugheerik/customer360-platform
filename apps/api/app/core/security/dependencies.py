@@ -2,7 +2,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import UnauthorizedError
+from app.core.exceptions import ForbiddenError, UnauthorizedError
 from app.core.security.jwt import decode_access_token
 from app.database.dependencies import get_db
 from app.modules.users.models import User
@@ -26,14 +26,38 @@ def get_current_user(
 
     user_id = decode_access_token(token)
     print("DECODED USER ID:", user_id)
-    
 
     repository = UserRepository(db)
 
     user = repository.get_by_id(user_id)
-   
 
     if user is None:
         raise UnauthorizedError("Invalid authentication credentials.")
 
     return user
+
+
+def require_active_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    """
+    Require an active user.
+    """
+
+    if not current_user.is_active:
+        raise ForbiddenError("Inactive user.")
+
+    return current_user
+
+
+def require_superuser(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    """
+    Require a superuser.
+    """
+
+    if not current_user.is_superuser:
+        raise ForbiddenError("Insufficient permissions.")
+
+    return current_user

@@ -29,11 +29,13 @@ class UserRepository:
         """
         Retrieve a user by ID.
         """
-        return (
-            self.db.query(User)
-            .filter(User.id == user_id)
-            .first()
-        )
+        return self.db.query(User).filter(User.id == user_id).first()
+
+    def get_all(self) -> list[User]:
+        """
+        Retrieve all users.
+        """
+        return self.db.query(User).all()
 
     def create(self, user: User) -> User:
         """

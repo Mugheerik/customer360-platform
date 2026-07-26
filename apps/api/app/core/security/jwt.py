@@ -28,7 +28,6 @@ def create_access_token(subject: str) -> str:
     )
 
 
-
 def decode_access_token(token: str) -> str:
     """
     Decode and validate an access token.
