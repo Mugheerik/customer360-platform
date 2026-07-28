@@ -39,9 +39,7 @@ def test_get_customers(client):
 
     assert create_response.status_code == 201
 
-    response = client.get(
-        "/api/v1/customers"
-    )
+    response = client.get("/api/v1/customers")
 
     assert response.status_code == 200
 
@@ -65,9 +63,7 @@ def test_get_customer_by_id(client):
 
     customer_id = customer["id"]
 
-    response = client.get(
-        f"/api/v1/customers/{customer_id}"
-    )
+    response = client.get(f"/api/v1/customers/{customer_id}")
 
     assert response.status_code == 200
 
@@ -127,9 +123,7 @@ def test_deactivate_customer(client):
 
     customer_id = customer["id"]
 
-    response = client.delete(
-        f"/api/v1/customers/{customer_id}"
-    )
+    response = client.delete(f"/api/v1/customers/{customer_id}")
 
     assert response.status_code == 200
 

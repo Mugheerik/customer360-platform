@@ -26,9 +26,7 @@ def test_list_users_as_regular_user(authenticated_client):
 def test_get_user_by_id(admin_client, superuser):
     user_id = superuser["user"].id
 
-    response = admin_client.get(
-        f"/api/v1/users/{user_id}"
-    )
+    response = admin_client.get(f"/api/v1/users/{user_id}")
 
     assert response.status_code == 200
 
@@ -41,9 +39,7 @@ def test_get_user_by_id(admin_client, superuser):
 def test_get_user_not_found(admin_client):
     random_id = uuid.uuid4()
 
-    response = admin_client.get(
-        f"/api/v1/users/{random_id}"
-    )
+    response = admin_client.get(f"/api/v1/users/{random_id}")
 
     assert response.status_code == 404
 

@@ -1,5 +1,3 @@
-
-
 def test_login_success(client, registered_user):
     response = client.post(
         "/api/v1/auth/login",

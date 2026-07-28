@@ -43,7 +43,7 @@ def require_active_user(
     """
     Require an active user.
     """
- 
+
     if not current_user.is_active:
         raise ForbiddenError("Inactive user.")
 

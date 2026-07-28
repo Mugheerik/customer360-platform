@@ -51,6 +51,4 @@ def decode_access_token(token: str) -> str:
         return subject
 
     except InvalidTokenError as exc:
-        raise UnauthorizedError(
-            "Invalid authentication credentials."
-        ) from exc
+        raise UnauthorizedError("Invalid authentication credentials.") from exc

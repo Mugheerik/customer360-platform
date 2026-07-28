@@ -1,6 +1,7 @@
 import pytest
 import uuid
 
+
 @pytest.fixture
 def registered_user(client, register_payload):
     """
@@ -77,9 +78,7 @@ def superuser(client, db_session, superuser_payload):
     from app.modules.users.models import User
 
     user = (
-        db_session.query(User)
-        .filter(User.email == superuser_payload["email"])
-        .first()
+        db_session.query(User).filter(User.email == superuser_payload["email"]).first()
     )
 
     user.is_superuser = True
