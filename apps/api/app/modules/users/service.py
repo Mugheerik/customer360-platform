@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.core.exceptions import CustomerNotFoundError
+from app.core.exceptions import UserNotFoundError
 from app.modules.users.models import User
 from app.modules.users.repository import UserRepository
 
@@ -28,6 +28,6 @@ class UserService:
         user = self.repository.get_by_id(user_id)
 
         if user is None:
-            raise CustomerNotFoundError("User not found.")
+            raise UserNotFoundError("User not found.")
 
         return user

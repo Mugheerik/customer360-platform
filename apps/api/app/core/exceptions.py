@@ -9,6 +9,17 @@ class CustomerNotFoundError(Exception):
         super().__init__(self.message)
 
 
+class UserNotFoundError(Exception):
+    """
+    Raised when a user cannot be found.
+    """
+
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        self.message = f"User '{user_id}' was not found."
+        super().__init__(self.message)
+
+
 class ConflictError(Exception):
     """
     Raised when a requested operation conflicts with existing data.

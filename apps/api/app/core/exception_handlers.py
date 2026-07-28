@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
@@ -6,6 +6,7 @@ from app.core.exceptions import (
     CustomerNotFoundError,
     ForbiddenError,
     UnauthorizedError,
+    UserNotFoundError,
 )
 
 
@@ -24,6 +25,21 @@ def register_exception_handlers(app: FastAPI) -> None:
             content={
                 "error": {
                     "code": "CUSTOMER_NOT_FOUND",
+                    "message": exc.message,
+                }
+            },
+        )
+
+    @app.exception_handler(UserNotFoundError)
+    async def user_not_found_handler(
+        request: Request,
+        exc: UserNotFoundError,
+    ):
+        return JSONResponse(
+            status_code=404,
+            content={
+                "error": {
+                    "code": "USER_NOT_FOUND",
                     "message": exc.message,
                 }
             },
@@ -70,6 +86,37 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "error": {
                     "code": "FORBIDDEN",
                     "message": str(exc),
+                }
+            },
+        )
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(
+        request: Request,
+        exc: HTTPException,
+    ):
+        """
+        Convert FastAPI HTTPExceptions into the application's
+        standard error response format.
+        """
+
+        error_codes = {
+            400: "BAD_REQUEST",
+            401: "UNAUTHORIZED",
+            403: "FORBIDDEN",
+            404: "NOT_FOUND",
+            409: "CONFLICT",
+        }
+
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": {
+                    "code": error_codes.get(
+                        exc.status_code,
+                        "HTTP_ERROR",
+                    ),
+                    "message": exc.detail,
                 }
             },
         )

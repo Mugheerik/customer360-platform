@@ -5,6 +5,7 @@ import jwt
 from jwt import InvalidTokenError
 
 from app.core.config import settings
+from app.core.exceptions import UnauthorizedError
 
 
 def create_access_token(subject: str) -> str:
@@ -50,4 +51,6 @@ def decode_access_token(token: str) -> str:
         return subject
 
     except InvalidTokenError as exc:
-        raise ValueError("Invalid access token.") from exc
+        raise UnauthorizedError(
+            "Invalid authentication credentials."
+        ) from exc
