@@ -56,7 +56,7 @@ def get_customer(
     return CustomerResponse.model_validate(service.get_customer(customer_id))
 
 
-@router.put(
+@router.patch(
     "/{customer_id}",
     response_model=CustomerResponse,
 )

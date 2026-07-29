@@ -88,14 +88,10 @@ def test_update_customer(client):
     customer_id = customer["id"]
 
     update_payload = {
-        "first_name": "Updated",
-        "last_name": "Customer",
-        "email": payload["email"],
         "phone": "03111111111",
-        "status": "active",
     }
 
-    response = client.put(
+    response = client.patch(
         f"/api/v1/customers/{customer_id}",
         json=update_payload,
     )
@@ -105,8 +101,15 @@ def test_update_customer(client):
     data = response.json()
 
     assert data["id"] == customer_id
-    assert data["first_name"] == "Updated"
+
+    # Updated field
     assert data["phone"] == "03111111111"
+
+    # Existing fields remain unchanged
+    assert data["first_name"] == payload["first_name"]
+    assert data["last_name"] == payload["last_name"]
+    assert data["email"] == payload["email"]
+    assert data["status"] == "active"
 
 
 def test_deactivate_customer(client):

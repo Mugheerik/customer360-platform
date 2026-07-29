@@ -13,11 +13,18 @@ class CustomerCreate(BaseModel):
 
 
 class CustomerUpdate(BaseModel):
-    first_name: str
-    last_name: str
-    email: EmailStr
+    """
+    Partial customer update.
+
+    Every field is optional so only the supplied
+    values are updated.
+    """
+
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
     phone: str | None = None
-    status: CustomerStatus
+    status: CustomerStatus | None = None
 
 
 class CustomerResponse(BaseModel):

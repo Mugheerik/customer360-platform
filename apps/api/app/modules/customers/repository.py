@@ -43,11 +43,10 @@ class CustomerRepository:
         customer: Customer,
         data: CustomerUpdate,
     ) -> Customer:
-        customer.first_name = data.first_name
-        customer.last_name = data.last_name
-        customer.email = data.email
-        customer.phone = data.phone
-        customer.status = data.status
+        update_data = data.model_dump(exclude_unset=True)
+
+        for field, value in update_data.items():
+            setattr(customer, field, value)
 
         self.db.commit()
         self.db.refresh(customer)
