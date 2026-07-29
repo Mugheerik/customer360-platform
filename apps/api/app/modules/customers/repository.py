@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.modules.customers.enums import CustomerStatus
 from app.modules.customers.models import Customer
 from app.modules.customers.schemas import CustomerCreate, CustomerUpdate
 
@@ -26,7 +27,7 @@ class CustomerRepository:
     def get_all(self) -> list[Customer]:
         statement = (
             select(Customer)
-            .where(Customer.status == "active")
+            .where(Customer.status == CustomerStatus.ACTIVE)
             .order_by(Customer.created_at.desc())
         )
 
@@ -57,7 +58,7 @@ class CustomerRepository:
         self,
         customer: Customer,
     ) -> Customer:
-        customer.status = "inactive"
+        customer.status = CustomerStatus.INACTIVE
 
         self.db.commit()
         self.db.refresh(customer)

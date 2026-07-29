@@ -5,6 +5,7 @@ from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.modules.customers.enums import CustomerStatus
 
 
 class Customer(Base):
@@ -44,9 +45,10 @@ class Customer(Base):
         nullable=True,
     )
 
-    status: Mapped[str] = mapped_column(
+    status: Mapped[CustomerStatus] = mapped_column(
         String(30),
-        default="active",
+        default=CustomerStatus.ACTIVE,
+        nullable=False,
     )
 
     created_at: Mapped[datetime] = mapped_column(
