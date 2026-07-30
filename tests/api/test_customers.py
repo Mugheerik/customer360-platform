@@ -134,3 +134,29 @@ def test_deactivate_customer(client):
 
     assert data["id"] == customer_id
     assert data["status"] == "inactive"
+
+
+def test_create_customer_duplicate_email(client):
+    payload = create_customer_payload()
+
+    response = client.post(
+        "/api/v1/customers",
+        json=payload,
+    )
+
+    assert response.status_code == 201
+
+    duplicate_response = client.post(
+        "/api/v1/customers",
+        json=payload,
+    )
+
+    assert duplicate_response.status_code == 409
+
+    data = duplicate_response.json()
+
+    assert data["error"]["code"] == "CONFLICT"
+    assert (
+        data["error"]["message"]
+        == f"Customer with email '{payload['email']}' already exists."
+    )

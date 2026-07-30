@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.exceptions import CustomerNotFoundError
 from app.modules.customers.models import Customer
+from app.modules.customers.queries import CustomerQueryParams
 from app.modules.customers.repository import CustomerRepository
 from app.modules.customers.schemas import (
     CustomerCreate,
@@ -39,13 +40,16 @@ class CustomerService:
 
         return created_customer
 
-    def get_customers(self) -> list[Customer]:
-        logger.info("Fetching active customers")
+    def get_customers(
+        self,
+        query: CustomerQueryParams,
+    ) -> list[Customer]:
+        logger.info("Fetching customers")
 
-        customers = self.repository.get_all()
+        customers = self.repository.get_all(query)
 
         logger.info(
-            "Retrieved %d active customers",
+            "Retrieved %d customers",
             len(customers),
         )
 

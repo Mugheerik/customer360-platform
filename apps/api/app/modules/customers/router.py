@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
+from app.modules.customers.queries import CustomerQueryParams
 from app.modules.customers.schemas import (
     CustomerCreate,
     CustomerResponse,
@@ -33,13 +34,14 @@ def create_customer(
     response_model=list[CustomerResponse],
 )
 def get_customers(
+    query: CustomerQueryParams = Depends(),
     db: Session = Depends(get_db),
 ) -> list[CustomerResponse]:
     service = CustomerService(db)
 
     return [
         CustomerResponse.model_validate(customer)
-        for customer in service.get_customers()
+        for customer in service.get_customers(query)
     ]
 
 
