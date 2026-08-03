@@ -1,9 +1,12 @@
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from sqlalchemy import DateTime, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+if TYPE_CHECKING:
+    from app.modules.notes.models import Note
 from app.database.base import Base
 from app.modules.customers.enums import CustomerStatus
 
@@ -11,9 +14,6 @@ from app.modules.customers.enums import CustomerStatus
 class Customer(Base):
     """
     SQLAlchemy model representing a customer.
-
-    This class defines how customer data
-    is stored in PostgreSQL.
     """
 
     __tablename__ = "customers"
@@ -60,4 +60,10 @@ class Customer(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC),
+    )
+
+    notes: Mapped[list["Note"]] = relationship(
+        "Note",
+        back_populates="customer",
+        cascade="all, delete-orphan",
     )

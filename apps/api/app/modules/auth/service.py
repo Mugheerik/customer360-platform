@@ -1,9 +1,20 @@
-from app.core.exceptions import ConflictError, UnauthorizedError
+from sqlalchemy.orm import Session
+
+from app.core.exceptions import (
+    ConflictError,
+    UnauthorizedError,
+)
 from app.core.security.jwt import create_access_token
-from app.core.security.password import hash_password, verify_password
-from app.modules.auth.schemas import LoginRequest, RegisterRequest
+from app.core.security.password import (
+    hash_password,
+    verify_password,
+)
+from app.core.uow import UnitOfWork
+from app.modules.auth.schemas import (
+    LoginRequest,
+    RegisterRequest,
+)
 from app.modules.users.models import User
-from app.modules.users.repository import UserRepository
 
 
 class AuthService:
@@ -11,20 +22,23 @@ class AuthService:
     Authentication service.
     """
 
-    def __init__(self, repository: UserRepository):
-        self.repository = repository
+    def __init__(
+        self,
+        db: Session,
+    ):
+        self.uow = UnitOfWork(db)
+        self.users = self.uow.users
 
-    def register(self, request: RegisterRequest) -> User:
-        """
-        Register a new user.
-        """
-
-        existing_user = self.repository.get_by_email(request.email)
+    def register(
+        self,
+        request: RegisterRequest,
+    ) -> User:
+        existing_user = self.users.get_by_email(request.email)
 
         if existing_user:
             raise ConflictError("Email is already registered.")
 
-        existing_user = self.repository.get_by_username(request.username)
+        existing_user = self.users.get_by_username(request.username)
 
         if existing_user:
             raise ConflictError("Username is already taken.")
@@ -37,14 +51,18 @@ class AuthService:
             last_name=request.last_name,
         )
 
-        return self.repository.create(user)
+        self.users.create(user)
 
-    def login(self, request: LoginRequest) -> str:
-        """
-        Authenticate a user and return an access token.
-        """
+        self.uow.commit()
+        self.uow.refresh(user)
 
-        user = self.repository.get_by_email(request.email)
+        return user
+
+    def login(
+        self,
+        request: LoginRequest,
+    ) -> str:
+        user = self.users.get_by_email(request.email)
 
         if user is None:
             raise UnauthorizedError("Invalid email or password.")

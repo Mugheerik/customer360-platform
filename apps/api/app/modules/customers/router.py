@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
+from app.modules.activity.schemas import ActivityResponse
 from app.modules.customers.queries import CustomerQueryParams
 from app.modules.customers.schemas import (
     CustomerCreate,
@@ -16,6 +17,12 @@ router = APIRouter(
 )
 
 
+def get_customer_service(
+    db: Session = Depends(get_db),
+) -> CustomerService:
+    return CustomerService(db)
+
+
 @router.post(
     "",
     response_model=CustomerResponse,
@@ -23,9 +30,8 @@ router = APIRouter(
 )
 def create_customer(
     customer: CustomerCreate,
-    db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
 ) -> CustomerResponse:
-    service = CustomerService(db)
     return CustomerResponse.model_validate(service.create_customer(customer))
 
 
@@ -35,10 +41,8 @@ def create_customer(
 )
 def get_customers(
     query: CustomerQueryParams = Depends(),
-    db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
 ) -> list[CustomerResponse]:
-    service = CustomerService(db)
-
     return [
         CustomerResponse.model_validate(customer)
         for customer in service.get_customers(query)
@@ -51,11 +55,24 @@ def get_customers(
 )
 def get_customer(
     customer_id: str,
-    db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
 ) -> CustomerResponse:
-    service = CustomerService(db)
-
     return CustomerResponse.model_validate(service.get_customer(customer_id))
+
+
+@router.get(
+    "/{customer_id}/timeline",
+    response_model=list[ActivityResponse],
+)
+def get_customer_timeline(
+    customer_id: str,
+    service: CustomerService = Depends(get_customer_service),
+) -> list[ActivityResponse]:
+    timeline = service.get_customer_timeline(
+        customer_id,
+    )
+
+    return [ActivityResponse.model_validate(activity) for activity in timeline]
 
 
 @router.patch(
@@ -65,16 +82,16 @@ def get_customer(
 def update_customer(
     customer_id: str,
     customer: CustomerUpdate,
-    db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
 ) -> CustomerResponse:
-    service = CustomerService(db)
-
     updated_customer = service.update_customer(
         customer_id,
         customer,
     )
 
-    return CustomerResponse.model_validate(updated_customer)
+    return CustomerResponse.model_validate(
+        updated_customer,
+    )
 
 
 @router.delete(
@@ -83,10 +100,10 @@ def update_customer(
 )
 def deactivate_customer(
     customer_id: str,
-    db: Session = Depends(get_db),
+    service: CustomerService = Depends(get_customer_service),
 ) -> CustomerResponse:
-    service = CustomerService(db)
-
-    customer = service.deactivate_customer(customer_id)
+    customer = service.deactivate_customer(
+        customer_id,
+    )
 
     return CustomerResponse.model_validate(customer)

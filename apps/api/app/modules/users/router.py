@@ -7,9 +7,9 @@ from app.core.security.dependencies import (
     get_current_user,
     require_superuser,
 )
+from app.core.uow import UnitOfWork
 from app.database.dependencies import get_db
 from app.modules.users.models import User
-from app.modules.users.repository import UserRepository
 from app.modules.users.schemas import UserResponse
 from app.modules.users.service import UserService
 
@@ -19,20 +19,23 @@ router = APIRouter(
 )
 
 
+def get_user_service(
+    db: Session = Depends(get_db),
+) -> UserService:
+    return UserService(UnitOfWork(db))
+
+
 @router.get(
     "",
     response_model=list[UserResponse],
 )
 def list_users(
-    db: Session = Depends(get_db),
+    service: UserService = Depends(get_user_service),
     _: User = Depends(require_superuser),
 ) -> list[UserResponse]:
     """
     List all users.
     """
-
-    repository = UserRepository(db)
-    service = UserService(repository)
 
     users = service.list_users()
 
@@ -59,15 +62,12 @@ def get_me(
 )
 def get_user(
     user_id: UUID,
-    db: Session = Depends(get_db),
+    service: UserService = Depends(get_user_service),
     _: User = Depends(require_superuser),
 ) -> UserResponse:
     """
     Retrieve a user by ID.
     """
-
-    repository = UserRepository(db)
-    service = UserService(repository)
 
     user = service.get_user(user_id)
 

@@ -9,14 +9,20 @@ from app.modules.customers.enums import (
 )
 from app.modules.customers.models import Customer
 from app.modules.customers.queries import CustomerQueryParams
-from app.modules.customers.schemas import CustomerCreate, CustomerUpdate
+from app.modules.customers.schemas import (
+    CustomerCreate,
+    CustomerUpdate,
+)
 
 
 class CustomerRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, customer: CustomerCreate) -> Customer:
+    def create(
+        self,
+        customer: CustomerCreate,
+    ) -> Customer:
         db_customer = Customer(
             first_name=customer.first_name,
             last_name=customer.last_name,
@@ -25,16 +31,6 @@ class CustomerRepository:
         )
 
         self.db.add(db_customer)
-
-        try:
-            self.db.commit()
-        except IntegrityError as err:
-            self.db.rollback()
-            raise ConflictError(
-                f"Customer with email '{customer.email}' already exists."
-            ) from err
-
-        self.db.refresh(db_customer)
 
         return db_customer
 
@@ -72,7 +68,10 @@ class CustomerRepository:
 
         return list(self.db.scalars(statement).all())
 
-    def get_by_id(self, customer_id: str) -> Customer | None:
+    def get_by_id(
+        self,
+        customer_id: str,
+    ) -> Customer | None:
         statement = select(Customer).where(Customer.id == customer_id)
 
         return self.db.scalar(statement)
@@ -85,10 +84,11 @@ class CustomerRepository:
         update_data = data.model_dump(exclude_unset=True)
 
         for field, value in update_data.items():
-            setattr(customer, field, value)
-
-        self.db.commit()
-        self.db.refresh(customer)
+            setattr(
+                customer,
+                field,
+                value,
+            )
 
         return customer
 
@@ -98,7 +98,20 @@ class CustomerRepository:
     ) -> Customer:
         customer.status = CustomerStatus.INACTIVE
 
-        self.db.commit()
-        self.db.refresh(customer)
-
         return customer
+
+    def flush(self) -> None:
+        """
+        Flush pending database changes.
+
+        Used by the service layer before commit so
+        IntegrityError can still be translated into
+        domain exceptions.
+        """
+        try:
+            self.db.flush()
+
+        except IntegrityError as err:
+            self.db.rollback()
+
+            raise ConflictError("Customer with this email already exists.") from err

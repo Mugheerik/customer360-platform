@@ -56,32 +56,26 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
 
       - name: Install dependencies
         run: uv sync --all-groups
+
+      - name: Dependency audit
+        run: uv run pip-audit
 
       - name: Run Ruff
         run: uv run ruff check .
 
       - name: Check formatting
-        run: uv run ruff format . --check
-
-      - name: Debug environment
-        shell: bash
-        run: |
-          echo "DATABASE_URL=$DATABASE_URL"
-          echo "JWT_ALGORITHM=$JWT_ALGORITHM"
-          echo "JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
-
-          if [ -n "$JWT_SECRET_KEY" ]; then
-            echo "✅ JWT_SECRET_KEY is set"
-          else
-            echo "❌ JWT_SECRET_KEY is MISSING"
-            exit 1
-          fi
+        run: uv run ruff format --check .
 
       - name: Run database migrations
         run: uv run alembic upgrade head
 
       - name: Run tests
-        run: uv run pytest ../../tests
+        run: |
+          uv run pytest ../../tests \
+            --cov=app \
+            --cov-report=term-missing

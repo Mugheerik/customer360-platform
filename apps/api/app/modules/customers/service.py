@@ -1,11 +1,21 @@
 import logging
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import CustomerNotFoundError
+from app.core.exceptions import (
+    ConflictError,
+    CustomerNotFoundError,
+)
+from app.core.uow import UnitOfWork
+from app.modules.activity.enums import (
+    ActivityAction,
+    EntityType,
+)
+from app.modules.activity.models import ActivityLog
+from app.modules.activity.schemas import ActivityCreate
 from app.modules.customers.models import Customer
 from app.modules.customers.queries import CustomerQueryParams
-from app.modules.customers.repository import CustomerRepository
 from app.modules.customers.schemas import (
     CustomerCreate,
     CustomerUpdate,
@@ -19,8 +29,14 @@ class CustomerService:
     Business logic for customer operations.
     """
 
-    def __init__(self, db: Session):
-        self.repository = CustomerRepository(db)
+    def __init__(
+        self,
+        db: Session,
+    ):
+        self.uow = UnitOfWork(db)
+
+        self.customers = self.uow.customers
+        self.activities = self.uow.activities
 
     def create_customer(
         self,
@@ -31,7 +47,28 @@ class CustomerService:
             customer.email,
         )
 
-        created_customer = self.repository.create(customer)
+        created_customer = self.customers.create(customer)
+
+        try:
+            self.uow.commit()
+        except IntegrityError as err:
+            self.uow.rollback()
+            raise ConflictError(
+                f"Customer with email '{customer.email}' already exists."
+            ) from err
+
+        self.uow.refresh(created_customer)
+
+        self.activities.create(
+            ActivityCreate(
+                entity_type=EntityType.CUSTOMER,
+                entity_id=str(created_customer.id),
+                action=ActivityAction.CREATED,
+            )
+        )
+
+        self.uow.commit()
+        self.uow.refresh(created_customer)
 
         logger.info(
             "Customer '%s' created successfully",
@@ -46,7 +83,7 @@ class CustomerService:
     ) -> list[Customer]:
         logger.info("Fetching customers")
 
-        customers = self.repository.get_all(query)
+        customers = self.customers.get_all(query)
 
         logger.info(
             "Retrieved %d customers",
@@ -64,7 +101,7 @@ class CustomerService:
             customer_id,
         )
 
-        customer = self.repository.get_by_id(customer_id)
+        customer = self.customers.get_by_id(customer_id)
 
         if customer is None:
             logger.warning(
@@ -87,10 +124,24 @@ class CustomerService:
             customer_id,
         )
 
-        updated_customer = self.repository.update(
+        updated_customer = self.customers.update(
             customer,
             data,
         )
+
+        self.uow.commit()
+        self.uow.refresh(updated_customer)
+
+        self.activities.create(
+            ActivityCreate(
+                entity_type=EntityType.CUSTOMER,
+                entity_id=str(updated_customer.id),
+                action=ActivityAction.UPDATED,
+            )
+        )
+
+        self.uow.commit()
+        self.uow.refresh(updated_customer)
 
         logger.info(
             "Customer '%s' updated successfully",
@@ -110,7 +161,21 @@ class CustomerService:
             customer_id,
         )
 
-        customer = self.repository.deactivate(customer)
+        customer = self.customers.deactivate(customer)
+
+        self.uow.commit()
+        self.uow.refresh(customer)
+
+        self.activities.create(
+            ActivityCreate(
+                entity_type=EntityType.CUSTOMER,
+                entity_id=str(customer.id),
+                action=ActivityAction.DEACTIVATED,
+            )
+        )
+
+        self.uow.commit()
+        self.uow.refresh(customer)
 
         logger.info(
             "Customer '%s' deactivated",
@@ -118,3 +183,22 @@ class CustomerService:
         )
 
         return customer
+
+    def get_customer_timeline(
+        self,
+        customer_id: str,
+    ) -> list[ActivityLog]:
+        """
+        Retrieve the activity timeline for a customer.
+        """
+
+        self.get_customer(customer_id)
+
+        logger.info(
+            "Fetching timeline for customer '%s'",
+            customer_id,
+        )
+
+        return self.activities.get_customer_timeline(
+            customer_id,
+        )

@@ -45,3 +45,14 @@ class ForbiddenError(Exception):
 
     def __init__(self, message: str = "Access denied."):
         super().__init__(message)
+
+
+class TaskNotFoundError(Exception):
+    """
+    Raised when a task cannot be found.
+    """
+
+    def __init__(self, task_id: str):
+        self.task_id = task_id
+        self.message = f"Task '{task_id}' was not found."
+        super().__init__(self.message)

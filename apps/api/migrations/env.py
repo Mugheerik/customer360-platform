@@ -5,9 +5,12 @@ from sqlalchemy import engine_from_config, pool
 
 from app.core.config import settings
 from app.database.base import Base
+from app.modules.activity.models import ActivityLog  # noqa: F401
 
 # Import all SQLAlchemy models here
 from app.modules.customers.models import Customer  # noqa: F401
+from app.modules.notes.models import Note  # noqa: F401
+from app.modules.tasks.models import Task  # noqa: F401
 from app.modules.users.models import User  # noqa: F401
 
 # Import all SQLAlchemy models here

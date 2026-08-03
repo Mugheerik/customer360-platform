@@ -1,8 +1,8 @@
 from uuid import UUID
 
 from app.core.exceptions import UserNotFoundError
+from app.core.uow import UnitOfWork
 from app.modules.users.models import User
-from app.modules.users.repository import UserRepository
 
 
 class UserService:
@@ -10,22 +10,29 @@ class UserService:
     User service.
     """
 
-    def __init__(self, repository: UserRepository):
-        self.repository = repository
+    def __init__(
+        self,
+        uow: UnitOfWork,
+    ):
+        self.uow = uow
+        self.users = uow.users
 
     def list_users(self) -> list[User]:
         """
         Retrieve all users.
         """
 
-        return self.repository.get_all()
+        return self.users.get_all()
 
-    def get_user(self, user_id: UUID) -> User:
+    def get_user(
+        self,
+        user_id: UUID,
+    ) -> User:
         """
         Retrieve a user by ID.
         """
 
-        user = self.repository.get_by_id(user_id)
+        user = self.users.get_by_id(user_id)
 
         if user is None:
             raise UserNotFoundError("User not found.")

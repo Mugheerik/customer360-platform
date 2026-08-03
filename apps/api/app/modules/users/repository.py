@@ -10,22 +10,34 @@ class UserRepository:
     Repository for user database operations.
     """
 
-    def __init__(self, db: Session):
+    def __init__(
+        self,
+        db: Session,
+    ):
         self.db = db
 
-    def get_by_email(self, email: str) -> User | None:
+    def get_by_email(
+        self,
+        email: str,
+    ) -> User | None:
         """
         Retrieve a user by email.
         """
         return self.db.query(User).filter(User.email == email).first()
 
-    def get_by_username(self, username: str) -> User | None:
+    def get_by_username(
+        self,
+        username: str,
+    ) -> User | None:
         """
         Retrieve a user by username.
         """
         return self.db.query(User).filter(User.username == username).first()
 
-    def get_by_id(self, user_id: UUID) -> User | None:
+    def get_by_id(
+        self,
+        user_id: UUID,
+    ) -> User | None:
         """
         Retrieve a user by ID.
         """
@@ -37,12 +49,16 @@ class UserRepository:
         """
         return self.db.query(User).all()
 
-    def create(self, user: User) -> User:
+    def create(
+        self,
+        user: User,
+    ) -> User:
         """
-        Create a new user.
+        Stage a new user for persistence.
+
+        Transaction management is handled by the
+        application service / Unit of Work.
         """
         self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
 
         return user

@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from app.core.exceptions import (
     ConflictError,
     CustomerNotFoundError,
     ForbiddenError,
+    TaskNotFoundError,
     UnauthorizedError,
     UserNotFoundError,
 )
@@ -117,6 +118,21 @@ def register_exception_handlers(app: FastAPI) -> None:
                         "HTTP_ERROR",
                     ),
                     "message": exc.detail,
+                }
+            },
+        )
+
+    @app.exception_handler(TaskNotFoundError)
+    async def task_not_found_exception_handler(
+        request: Request,
+        exc: TaskNotFoundError,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "error": {
+                    "code": "TASK_NOT_FOUND",
+                    "message": exc.message,
                 }
             },
         )

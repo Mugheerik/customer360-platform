@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.security.dependencies import get_current_user
@@ -11,7 +11,6 @@ from app.modules.auth.schemas import (
 )
 from app.modules.auth.service import AuthService
 from app.modules.users.models import User
-from app.modules.users.repository import UserRepository
 
 router = APIRouter(
     prefix="/auth",
@@ -22,7 +21,7 @@ router = APIRouter(
 @router.post(
     "/register",
     response_model=RegisterResponse,
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
 )
 def register(
     request: RegisterRequest,
@@ -31,9 +30,7 @@ def register(
     """
     Register a new user.
     """
-
-    repository = UserRepository(db)
-    service = AuthService(repository)
+    service = AuthService(db)
 
     user = service.register(request)
 
@@ -51,9 +48,7 @@ def login(
     """
     Authenticate a user.
     """
-
-    repository = UserRepository(db)
-    service = AuthService(repository)
+    service = AuthService(db)
 
     access_token = service.login(request)
 
@@ -72,5 +67,4 @@ def get_me(
     """
     Return the authenticated user.
     """
-
     return RegisterResponse.model_validate(current_user)
