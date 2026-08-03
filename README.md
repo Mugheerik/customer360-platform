@@ -9,6 +9,10 @@
 ![License](https://img.shields.io/github/license/Mugheerik/customer360-platform)
 ![Release](https://img.shields.io/github/v/release/Mugheerik/customer360-platform)
 ![Status](https://img.shields.io/badge/status-active%20development-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
+![Ruff](https://img.shields.io/badge/lint-Ruff-blue)
+![pip-audit](https://img.shields.io/badge/security-passing-brightgreen)
+![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen)
 
 ---
 
@@ -24,8 +28,8 @@ Every release emphasizes architectural quality, maintainability, observability, 
 
 # Project at a Glance
 
-| Category | Details |
-|----------|---------|
+| Category | Technology |
+|----------|------------|
 | Project Type | Platform Engineering Laboratory |
 | Architecture | Clean Architecture |
 | Design Style | Modular Monolith |
@@ -34,9 +38,13 @@ Every release emphasizes architectural quality, maintainability, observability, 
 | Database | PostgreSQL 17 |
 | ORM | SQLAlchemy 2.0 |
 | Authentication | JWT |
-| Testing | Pytest |
-| Code Quality | Ruff |
+| Testing | Pytest + Coverage |
+| Formatting | Ruff |
+| Linting | Ruff |
+| Dependency Audit | pip-audit |
+| Git Hooks | pre-commit |
 | CI/CD | GitHub Actions |
+| Package Manager | uv |
 | Current Milestone | Customer Domain (v0.3.0) |
 
 ---
@@ -456,6 +464,8 @@ Customer360 follows modern software engineering practices commonly used in profe
 
 Every contribution is expected to satisfy the platform's engineering quality standards before being merged.
 
+Every commit is automatically validated locally using pre-commit hooks before reaching the CI pipeline. This ensures formatting, linting, dependency auditing, and automated tests are executed before code is committed.
+
 ---
 
 ## Code Quality
@@ -519,10 +529,12 @@ The CI pipeline verifies:
 
 - Ruff Formatting
 - Ruff Linting
+- Dependency Installation
+- Database Migration
 - Automated Tests
 - Build Integrity
 
-Only changes that satisfy all quality gates are considered release-ready.
+Only changes that satisfy every quality gate are considered release-ready.
 
 ---
 
@@ -555,7 +567,11 @@ This ensures every version is reproducible and properly documented.
 | Authentication | JWT |
 | Package Manager | uv |
 | Testing | Pytest |
-| Linting & Formatting | Ruff |
+| Coverage | pytest-cov |
+| Formatting | Ruff |
+| Linting | Ruff |
+| Dependency Audit | pip-audit |
+| Git Hooks | pre-commit |
 | Infrastructure | Docker |
 | CI/CD | GitHub Actions |
 
@@ -568,13 +584,13 @@ The project emphasizes measurable engineering quality rather than feature count.
 | Metric | Status |
 |---------|--------|
 | Automated Testing | ✅ |
-| Authentication Coverage | ✅ |
-| Authorization Coverage | ✅ |
-| Customer API Coverage | ✅ |
-| Repository Test Fixtures | ✅ |
-| Continuous Integration | ✅ |
+| Test Coverage | ✅ |
+| Database Migration Validation | ✅ |
 | Ruff Formatting | ✅ |
 | Ruff Linting | ✅ |
+| Dependency Audit | ✅ |
+| Git Hooks | ✅ |
+| Continuous Integration | ✅ |
 | Semantic Versioning | ✅ |
 | GitHub Releases | ✅ |
 | Verified Commit Signing | ✅ |
@@ -626,11 +642,12 @@ Every platform capability follows the same workflow.
 3. Design the domain model and API contract.
 4. Implement the capability.
 5. Write automated tests.
-6. Run Ruff formatting and linting.
-7. Execute the complete test suite.
-8. Verify Continuous Integration.
-9. Update documentation.
-10. Publish a semantic release.
+6. Run Ruff formatting.
+7. Run Ruff linting.
+8. Run dependency audit.
+9. Execute the complete test suite.
+10. Verify CI locally.
+11. Push and monitor GitHub Actions.
 
 This workflow keeps engineering quality consistent as the platform evolves.
 
@@ -692,7 +709,14 @@ The API service and local development instructions are available in:
 ```text
 apps/api/README.md
 ```
+The local development workflow includes:
 
+- Alembic database migrations
+- Automated testing
+- Ruff formatting and linting
+- Dependency auditing
+- Pre-commit Git hooks
+- GitHub Actions continuous integration
 ---
 
 # Current Status
