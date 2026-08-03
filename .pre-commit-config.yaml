@@ -6,7 +6,6 @@ repos:
         args:
           - --config
           - apps/api/pyproject.toml
-          - --fix
 
       - id: ruff-format
         args:
