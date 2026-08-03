@@ -3,18 +3,21 @@ repos:
     rev: v0.15.21
     hooks:
       - id: ruff
+        args: ["--config", "apps/api/pyproject.toml"]
+
       - id: ruff-format
+        args: ["--config", "apps/api/pyproject.toml"]
 
   - repo: local
     hooks:
       - id: pytest
-        name: pytest
-        entry: uv run pytest
+        name: Backend Tests
+        entry: uv run --project apps/api pytest tests
         language: system
         pass_filenames: false
 
       - id: pip-audit
-        name: pip-audit
-        entry: uv run pip-audit
+        name: Backend Dependency Audit
+        entry: uv run --project apps/api pip-audit
         language: system
         pass_filenames: false
