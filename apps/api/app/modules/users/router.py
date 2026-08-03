@@ -1,8 +1,5 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
 from app.core.security.dependencies import (
     get_current_user,
     require_superuser,
@@ -12,6 +9,8 @@ from app.database.dependencies import get_db
 from app.modules.users.models import User
 from app.modules.users.schemas import UserResponse
 from app.modules.users.service import UserService
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/users",

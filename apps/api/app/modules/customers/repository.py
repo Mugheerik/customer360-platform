@@ -1,7 +1,3 @@
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-
 from app.core.exceptions import ConflictError
 from app.modules.customers.enums import (
     CustomerStatus,
@@ -13,6 +9,9 @@ from app.modules.customers.schemas import (
     CustomerCreate,
     CustomerUpdate,
 )
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 
 class CustomerRepository:

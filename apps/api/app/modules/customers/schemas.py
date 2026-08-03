@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr
-
 from app.modules.customers.enums import CustomerStatus
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class CustomerCreate(BaseModel):

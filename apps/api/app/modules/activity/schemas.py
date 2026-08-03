@@ -1,11 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
-
 from app.modules.activity.enums import (
     ActivityAction,
     EntityType,
 )
+from pydantic import BaseModel, ConfigDict
 
 
 class ActivityCreate(BaseModel):

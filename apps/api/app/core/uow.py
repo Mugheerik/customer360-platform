@@ -1,10 +1,9 @@
-from sqlalchemy.orm import Session
-
 from app.modules.activity.repository import ActivityRepository
 from app.modules.customers.repository import CustomerRepository
 from app.modules.notes.repository import NoteRepository
 from app.modules.tasks.repository import TaskRepository
 from app.modules.users.repository import UserRepository
+from sqlalchemy.orm import Session
 
 
 class UnitOfWork:

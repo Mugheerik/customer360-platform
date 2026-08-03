@@ -1,6 +1,3 @@
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
-
 from app.database.dependencies import get_db
 from app.modules.tasks.schemas import (
     TaskCreate,
@@ -8,6 +5,8 @@ from app.modules.tasks.schemas import (
     TaskUpdate,
 )
 from app.modules.tasks.service import TaskService
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/customers/{customer_id}/tasks",

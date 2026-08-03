@@ -1,6 +1,3 @@
-from fastapi import FastAPI, HTTPException, Request, status
-from fastapi.responses import JSONResponse
-
 from app.core.exceptions import (
     ConflictError,
     CustomerNotFoundError,
@@ -9,6 +6,8 @@ from app.core.exceptions import (
     UnauthorizedError,
     UserNotFoundError,
 )
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 
 
 def register_exception_handlers(app: FastAPI) -> None:

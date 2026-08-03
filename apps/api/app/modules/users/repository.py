@@ -1,8 +1,7 @@
 from uuid import UUID
 
-from sqlalchemy.orm import Session
-
 from app.modules.users.models import User
+from sqlalchemy.orm import Session
 
 
 class UserRepository:

@@ -1,7 +1,6 @@
-from fastapi import APIRouter
-
 from app.modules.health.schemas import HealthResponse
 from app.modules.health.service import HealthService
+from fastapi import APIRouter
 
 router = APIRouter(
     prefix="/health",

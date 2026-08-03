@@ -2,14 +2,15 @@
 import uuid
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-from tests.fixtures.users import *
-from tests.fixtures.customers import *
-from tests.fixtures.auth import *
 from app.database.database import engine
 from app.database.dependencies import get_db
 from app.main import app
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+
+from tests.fixtures.auth import *
+from tests.fixtures.customers import *
+from tests.fixtures.users import *
 
 
 @pytest.fixture

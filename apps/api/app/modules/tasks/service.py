@@ -1,7 +1,5 @@
 import logging
 
-from sqlalchemy.orm import Session
-
 from app.core.exceptions import CustomerNotFoundError, TaskNotFoundError
 from app.core.uow import UnitOfWork
 from app.modules.activity.enums import (
@@ -14,6 +12,7 @@ from app.modules.tasks.schemas import (
     TaskCreate,
     TaskUpdate,
 )
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

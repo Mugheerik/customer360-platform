@@ -1,11 +1,10 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
 from app.modules.tasks.models import Task
 from app.modules.tasks.schemas import (
     TaskCreate,
     TaskUpdate,
 )
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 class TaskRepository:

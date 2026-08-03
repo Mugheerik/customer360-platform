@@ -1,10 +1,9 @@
-from sqlalchemy.orm import Session
-
 from app.modules.notes.models import Note
 from app.modules.notes.schemas import (
     NoteCreate,
     NoteUpdate,
 )
+from sqlalchemy.orm import Session
 
 
 class NoteRepository:

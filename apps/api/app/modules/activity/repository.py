@@ -1,9 +1,8 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
 from app.modules.activity.enums import EntityType
 from app.modules.activity.models import ActivityLog
 from app.modules.activity.schemas import ActivityCreate
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 class ActivityRepository:

@@ -1,10 +1,9 @@
 import logging
 
-from sqlalchemy.orm import Session
-
 from app.core.uow import UnitOfWork
 from app.modules.activity.models import ActivityLog
 from app.modules.activity.schemas import ActivityCreate
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
