@@ -1,5 +1,7 @@
 import logging
 
+from sqlalchemy.orm import Session
+
 from app.core.exceptions import CustomerNotFoundError
 from app.core.uow import UnitOfWork
 from app.modules.activity.enums import (
@@ -12,7 +14,6 @@ from app.modules.notes.schemas import (
     NoteCreate,
     NoteUpdate,
 )
-from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

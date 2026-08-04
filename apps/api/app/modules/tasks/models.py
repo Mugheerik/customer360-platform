@@ -1,13 +1,14 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.base import Base
 from app.modules.tasks.enums import (
     TaskPriority,
     TaskStatus,
 )
-from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
 
 
 class Task(Base):

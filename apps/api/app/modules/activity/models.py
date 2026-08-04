@@ -1,13 +1,14 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from sqlalchemy import JSON, DateTime, Enum, String
+from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database.base import Base
 from app.modules.activity.enums import (
     ActivityAction,
     EntityType,
 )
-from sqlalchemy import JSON, DateTime, Enum, String
-from sqlalchemy.orm import Mapped, mapped_column
 
 
 class ActivityLog(Base):

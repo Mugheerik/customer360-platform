@@ -1,5 +1,8 @@
 import logging
 
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from app.core.exceptions import (
     ConflictError,
     CustomerNotFoundError,
@@ -17,8 +20,6 @@ from app.modules.customers.schemas import (
     CustomerCreate,
     CustomerUpdate,
 )
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

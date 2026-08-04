@@ -1,3 +1,6 @@
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+
 from app.core.security.dependencies import get_current_user
 from app.database.dependencies import get_db
 from app.modules.notes.schemas import (
@@ -7,8 +10,6 @@ from app.modules.notes.schemas import (
 )
 from app.modules.notes.service import NoteService
 from app.modules.users.models import User
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/customers/{customer_id}/notes",

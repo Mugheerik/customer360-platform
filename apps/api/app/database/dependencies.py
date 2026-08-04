@@ -1,7 +1,8 @@
 from collections.abc import Generator
 
-from app.database.database import SessionLocal
 from sqlalchemy.orm import Session
+
+from app.database.database import SessionLocal
 
 
 def get_db() -> Generator[Session]:

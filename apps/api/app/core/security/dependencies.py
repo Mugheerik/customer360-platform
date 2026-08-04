@@ -1,11 +1,12 @@
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+
 from app.core.exceptions import ForbiddenError, UnauthorizedError
 from app.core.security.jwt import decode_access_token
 from app.database.dependencies import get_db
 from app.modules.users.models import User
 from app.modules.users.repository import UserRepository
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login",

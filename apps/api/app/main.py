@@ -1,8 +1,9 @@
+from fastapi import FastAPI
+
 from app.core.config import settings
 from app.core.exception_handlers import register_exception_handlers
 from app.core.logging import configure_logging
 from app.entrypoints.http import api_router
-from fastapi import FastAPI
 
 configure_logging()
 

@@ -1,3 +1,5 @@
+from sqlalchemy.orm import Session
+
 from app.core.exceptions import (
     ConflictError,
     UnauthorizedError,
@@ -13,7 +15,6 @@ from app.modules.auth.schemas import (
     RegisterRequest,
 )
 from app.modules.users.models import User
-from sqlalchemy.orm import Session
 
 
 class AuthService:

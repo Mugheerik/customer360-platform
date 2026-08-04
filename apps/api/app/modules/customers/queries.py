@@ -1,9 +1,10 @@
+from pydantic import BaseModel, Field
+
 from app.modules.customers.enums import (
     CustomerSortField,
     CustomerStatus,
     SortOrder,
 )
-from pydantic import BaseModel, Field
 
 
 class CustomerQueryParams(BaseModel):

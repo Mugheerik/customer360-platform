@@ -2,9 +2,10 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import jwt
+from jwt import InvalidTokenError
+
 from app.core.config import settings
 from app.core.exceptions import UnauthorizedError
-from jwt import InvalidTokenError
 
 
 def create_access_token(subject: str) -> str:

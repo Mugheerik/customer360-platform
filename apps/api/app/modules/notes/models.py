@@ -5,9 +5,10 @@ from uuid import uuid4
 if TYPE_CHECKING:
     from app.modules.customers.models import Customer
     from app.modules.users.models import User
-from app.database.base import Base
 from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.database.base import Base
 
 
 class Note(Base):

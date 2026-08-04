@@ -3,14 +3,10 @@ repos:
     rev: v0.15.21
     hooks:
       - id: ruff-check
-        args:
-          - --config
-          - apps/api/pyproject.toml
+        files: ^apps/api/
 
       - id: ruff-format
-        args:
-          - --config
-          - apps/api/pyproject.toml
+        files: ^apps/api/
 
   - repo: local
     hooks:
