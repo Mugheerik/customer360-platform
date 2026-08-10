@@ -62,3 +62,25 @@ class UserRepository:
         self.db.add(user)
 
         return user
+
+    def activate(
+        self,
+        user: User,
+    ) -> User:
+        """
+        Activate a user.
+        """
+        user.is_active = True
+
+        return user
+
+    def deactivate(
+        self,
+        user: User,
+    ) -> User:
+        """
+        Deactivate a user.
+        """
+        user.is_active = False
+
+        return user

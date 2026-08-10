@@ -1,8 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import HomePage from "@/features/home/HomePage";
 import LoginPage from "@/features/auth/pages/LoginPage";
+import CustomerDetailsPage from "@/features/customers/pages/CustomerDetailsPage";
+import CustomersPage from "@/features/customers/pages/CustomersPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+import HomePage from "@/features/home/HomePage";
 import AppLayout from "@/layouts/AppLayout";
 import RootLayout from "@/layouts/RootLayout";
 
@@ -32,6 +34,14 @@ export const router = createBrowserRouter([
           {
             path: "/dashboard",
             element: <DashboardPage />,
+          },
+          {
+            path: "/customers",
+            element: <CustomersPage />,
+          },
+          {
+            path: "/customers/:customerId",
+            element: <CustomerDetailsPage />,
           },
         ],
       },

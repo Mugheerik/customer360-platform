@@ -47,12 +47,15 @@ class CustomerService:
             customer.email,
         )
 
-        created_customer = self.customers.create(customer)
+        created_customer = self.customers.create(
+            customer,
+        )
 
         try:
             self.uow.commit()
         except IntegrityError as err:
             self.uow.rollback()
+
             raise ConflictError(
                 f"Customer with email '{customer.email}' already exists."
             ) from err
@@ -80,17 +83,26 @@ class CustomerService:
     def get_customers(
         self,
         query: CustomerQueryParams,
-    ) -> list[Customer]:
-        logger.info("Fetching customers")
-
-        customers = self.customers.get_all(query)
+    ):
+        """
+        Retrieve a paginated list of customers.
+        """
 
         logger.info(
-            "Retrieved %d customers",
-            len(customers),
+            "Fetching customers - page=%d size=%d",
+            query.page,
+            query.size,
         )
 
-        return customers
+        result = self.customers.get_all(query)
+
+        logger.info(
+            "Retrieved %d customers out of %d",
+            len(result.items),
+            result.total,
+        )
+
+        return result
 
     def get_customer(
         self,
@@ -101,14 +113,19 @@ class CustomerService:
             customer_id,
         )
 
-        customer = self.customers.get_by_id(customer_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
 
         if customer is None:
             logger.warning(
                 "Customer '%s' not found",
                 customer_id,
             )
-            raise CustomerNotFoundError(customer_id)
+
+            raise CustomerNotFoundError(
+                customer_id,
+            )
 
         return customer
 
@@ -117,7 +134,9 @@ class CustomerService:
         customer_id: str,
         data: CustomerUpdate,
     ) -> Customer:
-        customer = self.get_customer(customer_id)
+        customer = self.get_customer(
+            customer_id,
+        )
 
         logger.info(
             "Updating customer '%s'",
@@ -130,18 +149,24 @@ class CustomerService:
         )
 
         self.uow.commit()
-        self.uow.refresh(updated_customer)
+        self.uow.refresh(
+            updated_customer,
+        )
 
         self.activities.create(
             ActivityCreate(
                 entity_type=EntityType.CUSTOMER,
-                entity_id=str(updated_customer.id),
+                entity_id=str(
+                    updated_customer.id,
+                ),
                 action=ActivityAction.UPDATED,
             )
         )
 
         self.uow.commit()
-        self.uow.refresh(updated_customer)
+        self.uow.refresh(
+            updated_customer,
+        )
 
         logger.info(
             "Customer '%s' updated successfully",
@@ -150,18 +175,60 @@ class CustomerService:
 
         return updated_customer
 
+    def activate_customer(
+        self,
+        customer_id: str,
+    ) -> Customer:
+        customer = self.get_customer(
+            customer_id,
+        )
+
+        logger.info(
+            "Activating customer '%s'",
+            customer_id,
+        )
+
+        customer = self.customers.activate(
+            customer,
+        )
+
+        self.uow.commit()
+        self.uow.refresh(customer)
+
+        self.activities.create(
+            ActivityCreate(
+                entity_type=EntityType.CUSTOMER,
+                entity_id=str(customer.id),
+                action=ActivityAction.ACTIVATED,
+            )
+        )
+
+        self.uow.commit()
+        self.uow.refresh(customer)
+
+        logger.info(
+            "Customer '%s' activated",
+            customer_id,
+        )
+
+        return customer
+
     def deactivate_customer(
         self,
         customer_id: str,
     ) -> Customer:
-        customer = self.get_customer(customer_id)
+        customer = self.get_customer(
+            customer_id,
+        )
 
         logger.info(
             "Deactivating customer '%s'",
             customer_id,
         )
 
-        customer = self.customers.deactivate(customer)
+        customer = self.customers.deactivate(
+            customer,
+        )
 
         self.uow.commit()
         self.uow.refresh(customer)
@@ -192,7 +259,9 @@ class CustomerService:
         Retrieve the activity timeline for a customer.
         """
 
-        self.get_customer(customer_id)
+        self.get_customer(
+            customer_id,
+        )
 
         logger.info(
             "Fetching timeline for customer '%s'",

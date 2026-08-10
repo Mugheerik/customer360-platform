@@ -1,23 +1,11 @@
-export interface NavigationItem {
+export type NavigationItem = {
   label: string;
   href: string;
-}
+};
 
-export const navigationItems: NavigationItem[] = [
+export const navigation: NavigationItem[] = [
   {
     label: "Home",
     href: "/",
-  },
-  {
-    label: "Features",
-    href: "#features",
-  },
-  {
-    label: "Architecture",
-    href: "#architecture",
-  },
-  {
-    label: "Documentation",
-    href: "#documentation",
   },
 ];

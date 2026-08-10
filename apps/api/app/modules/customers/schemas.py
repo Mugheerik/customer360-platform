@@ -28,6 +28,10 @@ class CustomerUpdate(BaseModel):
 
 
 class CustomerResponse(BaseModel):
+    """
+    Customer response.
+    """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -38,3 +42,17 @@ class CustomerResponse(BaseModel):
     status: CustomerStatus
     created_at: datetime
     updated_at: datetime
+
+
+class CustomerListResponse(BaseModel):
+    """
+    Paginated customer list response.
+    """
+
+    items: list[CustomerResponse]
+
+    page: int
+    size: int
+
+    total: int
+    pages: int

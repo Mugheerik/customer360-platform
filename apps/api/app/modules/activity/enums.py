@@ -8,6 +8,7 @@ class ActivityAction(StrEnum):
 
     CREATED = "created"
     UPDATED = "updated"
+    ACTIVATED = "activated"
     DEACTIVATED = "deactivated"
 
 

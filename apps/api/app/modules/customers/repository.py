@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from dataclasses import dataclass
+
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -15,8 +17,25 @@ from app.modules.customers.schemas import (
 )
 
 
+@dataclass
+class CustomerListResult:
+    """
+    Result of a paginated customer query.
+    """
+
+    items: list[Customer]
+    total: int
+
+
 class CustomerRepository:
-    def __init__(self, db: Session):
+    """
+    Repository for customer database operations.
+    """
+
+    def __init__(
+        self,
+        db: Session,
+    ):
         self.db = db
 
     def create(
@@ -37,11 +56,18 @@ class CustomerRepository:
     def get_all(
         self,
         query: CustomerQueryParams,
-    ) -> list[Customer]:
+    ) -> CustomerListResult:
+        """
+        Retrieve a paginated list of customers and
+        the total number of matching customers.
+        """
+
         statement = select(Customer)
 
         if query.status is not None:
-            statement = statement.where(Customer.status == query.status)
+            statement = statement.where(
+                Customer.status == query.status,
+            )
 
         if query.search:
             search = f"%{query.search}%"
@@ -52,27 +78,50 @@ class CustomerRepository:
                 | Customer.email.ilike(search)
             )
 
+        total_statement = select(
+            func.count(),
+        ).select_from(
+            statement.subquery(),
+        )
+
+        total = self.db.scalar(total_statement) or 0
+
         sort_column = getattr(
             Customer,
             query.sort.value,
         )
 
         if query.order == SortOrder.DESC:
-            statement = statement.order_by(sort_column.desc())
+            statement = statement.order_by(
+                sort_column.desc(),
+            )
         else:
-            statement = statement.order_by(sort_column.asc())
+            statement = statement.order_by(
+                sort_column.asc(),
+            )
 
         offset = (query.page - 1) * query.size
 
-        statement = statement.offset(offset).limit(query.size)
+        statement = statement.offset(offset).limit(
+            query.size,
+        )
 
-        return list(self.db.scalars(statement).all())
+        items = list(
+            self.db.scalars(statement).all(),
+        )
+
+        return CustomerListResult(
+            items=items,
+            total=total,
+        )
 
     def get_by_id(
         self,
         customer_id: str,
     ) -> Customer | None:
-        statement = select(Customer).where(Customer.id == customer_id)
+        statement = select(Customer).where(
+            Customer.id == customer_id,
+        )
 
         return self.db.scalar(statement)
 
@@ -81,7 +130,9 @@ class CustomerRepository:
         customer: Customer,
         data: CustomerUpdate,
     ) -> Customer:
-        update_data = data.model_dump(exclude_unset=True)
+        update_data = data.model_dump(
+            exclude_unset=True,
+        )
 
         for field, value in update_data.items():
             setattr(
@@ -89,6 +140,14 @@ class CustomerRepository:
                 field,
                 value,
             )
+
+        return customer
+
+    def activate(
+        self,
+        customer: Customer,
+    ) -> Customer:
+        customer.status = CustomerStatus.ACTIVE
 
         return customer
 

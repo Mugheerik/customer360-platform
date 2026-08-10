@@ -36,7 +36,6 @@ def list_users(
     """
     List all users.
     """
-
     users = service.list_users()
 
     return [UserResponse.model_validate(user) for user in users]
@@ -52,7 +51,6 @@ def get_me(
     """
     Return the currently authenticated user.
     """
-
     return UserResponse.model_validate(current_user)
 
 
@@ -68,7 +66,44 @@ def get_user(
     """
     Retrieve a user by ID.
     """
-
     user = service.get_user(user_id)
+
+    return UserResponse.model_validate(user)
+
+
+@router.patch(
+    "/{user_id}/activate",
+    response_model=UserResponse,
+)
+def activate_user(
+    user_id: UUID,
+    service: UserService = Depends(get_user_service),
+    _: User = Depends(require_superuser),
+) -> UserResponse:
+    """
+    Activate a user.
+
+    Only superusers can activate users.
+    """
+    user = service.activate_user(user_id)
+
+    return UserResponse.model_validate(user)
+
+
+@router.patch(
+    "/{user_id}/deactivate",
+    response_model=UserResponse,
+)
+def deactivate_user(
+    user_id: UUID,
+    service: UserService = Depends(get_user_service),
+    _: User = Depends(require_superuser),
+) -> UserResponse:
+    """
+    Deactivate a user.
+
+    Only superusers can deactivate users.
+    """
+    user = service.deactivate_user(user_id)
 
     return UserResponse.model_validate(user)

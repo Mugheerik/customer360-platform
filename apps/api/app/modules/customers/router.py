@@ -6,6 +6,7 @@ from app.modules.activity.schemas import ActivityResponse
 from app.modules.customers.queries import CustomerQueryParams
 from app.modules.customers.schemas import (
     CustomerCreate,
+    CustomerListResponse,
     CustomerResponse,
     CustomerUpdate,
 )
@@ -30,23 +31,34 @@ def get_customer_service(
 )
 def create_customer(
     customer: CustomerCreate,
-    service: CustomerService = Depends(get_customer_service),
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
 ) -> CustomerResponse:
-    return CustomerResponse.model_validate(service.create_customer(customer))
+    return CustomerResponse.model_validate(
+        service.create_customer(customer),
+    )
 
 
 @router.get(
     "",
-    response_model=list[CustomerResponse],
+    response_model=CustomerListResponse,
 )
 def get_customers(
     query: CustomerQueryParams = Depends(),
-    service: CustomerService = Depends(get_customer_service),
-) -> list[CustomerResponse]:
-    return [
-        CustomerResponse.model_validate(customer)
-        for customer in service.get_customers(query)
-    ]
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
+) -> CustomerListResponse:
+    result = service.get_customers(query)
+
+    return CustomerListResponse(
+        items=[CustomerResponse.model_validate(customer) for customer in result.items],
+        total=result.total,
+        page=query.page,
+        size=query.size,
+        pages=((result.total + query.size - 1) // query.size),
+    )
 
 
 @router.get(
@@ -55,9 +67,13 @@ def get_customers(
 )
 def get_customer(
     customer_id: str,
-    service: CustomerService = Depends(get_customer_service),
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
 ) -> CustomerResponse:
-    return CustomerResponse.model_validate(service.get_customer(customer_id))
+    return CustomerResponse.model_validate(
+        service.get_customer(customer_id),
+    )
 
 
 @router.get(
@@ -66,7 +82,9 @@ def get_customer(
 )
 def get_customer_timeline(
     customer_id: str,
-    service: CustomerService = Depends(get_customer_service),
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
 ) -> list[ActivityResponse]:
     timeline = service.get_customer_timeline(
         customer_id,
@@ -82,7 +100,9 @@ def get_customer_timeline(
 def update_customer(
     customer_id: str,
     customer: CustomerUpdate,
-    service: CustomerService = Depends(get_customer_service),
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
 ) -> CustomerResponse:
     updated_customer = service.update_customer(
         customer_id,
@@ -94,16 +114,39 @@ def update_customer(
     )
 
 
+@router.patch(
+    "/{customer_id}/activate",
+    response_model=CustomerResponse,
+)
+def activate_customer(
+    customer_id: str,
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
+) -> CustomerResponse:
+    customer = service.activate_customer(
+        customer_id,
+    )
+
+    return CustomerResponse.model_validate(
+        customer,
+    )
+
+
 @router.delete(
     "/{customer_id}",
     response_model=CustomerResponse,
 )
 def deactivate_customer(
     customer_id: str,
-    service: CustomerService = Depends(get_customer_service),
+    service: CustomerService = Depends(
+        get_customer_service,
+    ),
 ) -> CustomerResponse:
     customer = service.deactivate_customer(
         customer_id,
     )
 
-    return CustomerResponse.model_validate(customer)
+    return CustomerResponse.model_validate(
+        customer,
+    )

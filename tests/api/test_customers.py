@@ -45,8 +45,21 @@ def test_get_customers(client):
 
     data = response.json()
 
-    assert isinstance(data, list)
-    assert len(data) > 0
+    assert isinstance(data, dict)
+
+    assert "items" in data
+    assert "page" in data
+    assert "size" in data
+    assert "total" in data
+    assert "pages" in data
+
+    assert isinstance(data["items"], list)
+    assert len(data["items"]) > 0
+
+    assert data["page"] == 1
+    assert data["size"] == 20
+    assert data["total"] >= 1
+    assert data["pages"] >= 1
 
 
 def test_get_customer_by_id(client):
@@ -63,7 +76,9 @@ def test_get_customer_by_id(client):
 
     customer_id = customer["id"]
 
-    response = client.get(f"/api/v1/customers/{customer_id}")
+    response = client.get(
+        f"/api/v1/customers/{customer_id}",
+    )
 
     assert response.status_code == 200
 
@@ -102,10 +117,8 @@ def test_update_customer(client):
 
     assert data["id"] == customer_id
 
-    # Updated field
     assert data["phone"] == "03111111111"
 
-    # Existing fields remain unchanged
     assert data["first_name"] == payload["first_name"]
     assert data["last_name"] == payload["last_name"]
     assert data["email"] == payload["email"]
@@ -126,7 +139,9 @@ def test_deactivate_customer(client):
 
     customer_id = customer["id"]
 
-    response = client.delete(f"/api/v1/customers/{customer_id}")
+    response = client.delete(
+        f"/api/v1/customers/{customer_id}",
+    )
 
     assert response.status_code == 200
 
