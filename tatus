@@ -1,0 +1,13 @@
+[1mdiff --git a/apps/api/migrations/versions/52c2b9e4e46e_create_activity_logs_table.py b/apps/api/migrations/versions/52c2b9e4e46e_create_activity_logs_table.py[m
+[1mindex 70afb4d..2c417a8 100644[m
+[1m--- a/apps/api/migrations/versions/52c2b9e4e46e_create_activity_logs_table.py[m
+[1m+++ b/apps/api/migrations/versions/52c2b9e4e46e_create_activity_logs_table.py[m
+[36m@@ -44,7 +44,7 @@[m [mdef upgrade() -> None:[m
+             ),[m
+             nullable=False,[m
+         ),[m
+[31m-        sa.Column("performed_by", sa.String(length=36), nullable=True),[m
+[32m+[m[32m        sa.Column("actor_id", sa.String(length=36), nullable=True),[m
+         sa.Column("details", sa.JSON(), nullable=True),[m
+         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),[m
+         sa.PrimaryKeyConstraint("id"),[m
