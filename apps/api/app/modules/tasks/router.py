@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.core.security.dependencies import get_current_user
 from app.database.dependencies import get_db
 from app.modules.tasks.schemas import (
     TaskCreate,
@@ -8,6 +9,7 @@ from app.modules.tasks.schemas import (
     TaskUpdate,
 )
 from app.modules.tasks.service import TaskService
+from app.modules.users.models import User
 
 router = APIRouter(
     prefix="/customers/{customer_id}/tasks",
@@ -29,11 +31,13 @@ def get_task_service(
 def create_task(
     customer_id: str,
     task: TaskCreate,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> TaskResponse:
     created_task = service.create_task(
-        customer_id,
-        task,
+        customer_id=customer_id,
+        task=task,
+        actor_id=str(current_user.id),
     )
 
     return TaskResponse.model_validate(created_task)
@@ -45,9 +49,12 @@ def create_task(
 )
 def get_customer_tasks(
     customer_id: str,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> list[TaskResponse]:
-    tasks = service.get_customer_tasks(customer_id)
+    tasks = service.get_customer_tasks(
+        customer_id,
+    )
 
     return [TaskResponse.model_validate(task) for task in tasks]
 
@@ -60,11 +67,14 @@ def update_task(
     customer_id: str,
     task_id: str,
     task: TaskUpdate,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> TaskResponse:
     updated_task = service.update_task(
-        task_id,
-        task,
+        customer_id=customer_id,
+        task_id=task_id,
+        data=task,
+        actor_id=str(current_user.id),
     )
 
     return TaskResponse.model_validate(updated_task)
@@ -77,6 +87,11 @@ def update_task(
 def delete_task(
     customer_id: str,
     task_id: str,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> None:
-    service.delete_task(task_id)
+    service.delete_task(
+        customer_id=customer_id,
+        task_id=task_id,
+        actor_id=str(current_user.id),
+    )

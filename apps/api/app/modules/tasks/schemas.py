@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -20,7 +21,7 @@ class TaskCreate(BaseModel):
 
     description: str | None = None
 
-    assigned_to: str | None = None
+    assigned_to: UUID | None = None
 
     priority: TaskPriority = TaskPriority.MEDIUM
 
@@ -38,7 +39,7 @@ class TaskUpdate(BaseModel):
 
     description: str | None = None
 
-    assigned_to: str | None = None
+    assigned_to: UUID | None = None
 
     status: TaskStatus | None = None
 
@@ -58,7 +59,7 @@ class TaskResponse(BaseModel):
 
     customer_id: str
 
-    assigned_to: str | None
+    assigned_to: UUID | None
 
     title: str
 

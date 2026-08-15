@@ -13,7 +13,7 @@ def test_log_activity(db_session):
         entity_type=EntityType.CUSTOMER,
         entity_id="customer-123",
         action=ActivityAction.CREATED,
-        performed_by="user-123",
+        actor_id="user-123",
         details={
             "email": "john@example.com",
         },
@@ -25,5 +25,5 @@ def test_log_activity(db_session):
     assert result.entity_type == EntityType.CUSTOMER
     assert result.entity_id == "customer-123"
     assert result.action == ActivityAction.CREATED
-    assert result.performed_by == "user-123"
+    assert result.actor_id == "user-123"
     assert result.details["email"] == "john@example.com"

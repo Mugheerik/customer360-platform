@@ -2,7 +2,10 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import CustomerNotFoundError, TaskNotFoundError
+from app.core.exceptions import (
+    CustomerNotFoundError,
+    TaskNotFoundError,
+)
 from app.core.uow import UnitOfWork
 from app.modules.activity.enums import (
     ActivityAction,
@@ -37,11 +40,16 @@ class TaskService:
         self,
         customer_id: str,
         task: TaskCreate,
+        actor_id: str,
     ) -> Task:
-        customer = self.customers.get_by_id(customer_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
 
         if customer is None:
-            raise CustomerNotFoundError(customer_id)
+            raise CustomerNotFoundError(
+                customer_id,
+            )
 
         logger.info(
             "Creating task for customer '%s'",
@@ -58,7 +66,7 @@ class TaskService:
                 entity_type=EntityType.CUSTOMER,
                 entity_id=customer_id,
                 action=ActivityAction.UPDATED,
-                performed_by=task.assigned_to,
+                actor_id=actor_id,
                 details={
                     "event": "task_created",
                     "task_id": created_task.id,
@@ -70,28 +78,58 @@ class TaskService:
         self.uow.commit()
         self.uow.refresh(created_task)
 
+        logger.info(
+            "Task '%s' created for customer '%s'",
+            created_task.id,
+            customer_id,
+        )
+
         return created_task
 
     def get_customer_tasks(
         self,
         customer_id: str,
     ) -> list[Task]:
-        customer = self.customers.get_by_id(customer_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
 
         if customer is None:
-            raise CustomerNotFoundError(customer_id)
+            raise CustomerNotFoundError(
+                customer_id,
+            )
 
-        return self.tasks.get_customer_tasks(customer_id)
+        logger.info(
+            "Fetching tasks for customer '%s'",
+            customer_id,
+        )
+
+        return self.tasks.get_customer_tasks(
+            customer_id,
+        )
 
     def update_task(
         self,
+        customer_id: str,
         task_id: str,
         data: TaskUpdate,
+        actor_id: str,
     ) -> Task:
-        task = self.tasks.get_by_id(task_id)
+        task = self.tasks.get_by_id_for_customer(
+            task_id,
+            customer_id,
+        )
 
         if task is None:
-            raise TaskNotFoundError(task_id)
+            raise TaskNotFoundError(
+                task_id,
+            )
+
+        logger.info(
+            "Updating task '%s' for customer '%s'",
+            task_id,
+            customer_id,
+        )
 
         updated_task = self.tasks.update(
             task,
@@ -101,9 +139,9 @@ class TaskService:
         self.activities.create(
             ActivityCreate(
                 entity_type=EntityType.CUSTOMER,
-                entity_id=task.customer_id,
+                entity_id=customer_id,
                 action=ActivityAction.UPDATED,
-                performed_by=updated_task.assigned_to,
+                actor_id=actor_id,
                 details={
                     "event": "task_updated",
                     "task_id": updated_task.id,
@@ -115,19 +153,36 @@ class TaskService:
         self.uow.commit()
         self.uow.refresh(updated_task)
 
+        logger.info(
+            "Task '%s' updated successfully",
+            task_id,
+        )
+
         return updated_task
 
     def delete_task(
         self,
+        customer_id: str,
         task_id: str,
+        actor_id: str,
     ) -> None:
-        task = self.tasks.get_by_id(task_id)
+        task = self.tasks.get_by_id_for_customer(
+            task_id,
+            customer_id,
+        )
 
         if task is None:
-            raise TaskNotFoundError(task_id)
+            raise TaskNotFoundError(
+                task_id,
+            )
 
-        customer_id = task.customer_id
         task_title = task.title
+
+        logger.info(
+            "Deleting task '%s' for customer '%s'",
+            task_id,
+            customer_id,
+        )
 
         self.tasks.delete(task)
 
@@ -136,6 +191,7 @@ class TaskService:
                 entity_type=EntityType.CUSTOMER,
                 entity_id=customer_id,
                 action=ActivityAction.UPDATED,
+                actor_id=actor_id,
                 details={
                     "event": "task_deleted",
                     "task_id": task_id,
@@ -145,3 +201,8 @@ class TaskService:
         )
 
         self.uow.commit()
+
+        logger.info(
+            "Task '%s' deleted successfully",
+            task_id,
+        )

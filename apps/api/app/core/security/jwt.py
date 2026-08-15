@@ -43,7 +43,7 @@ def decode_access_token(token: str) -> str:
 
         subject = payload.get("sub")
 
-        if subject is None:
+        if not isinstance(subject, str):
             raise InvalidTokenError()
 
         UUID(subject)
@@ -51,4 +51,6 @@ def decode_access_token(token: str) -> str:
         return subject
 
     except InvalidTokenError as exc:
-        raise UnauthorizedError("Invalid authentication credentials.") from exc
+        raise UnauthorizedError(
+            "Invalid authentication credentials.",
+        ) from exc

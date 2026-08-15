@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -8,8 +12,10 @@ import Container from "@/components/ui/container";
 import Section from "@/components/ui/section";
 import { H1, Lead } from "@/components/ui/typography";
 
-import CustomerForm from "../components/CustomerForm";
 import { CustomerService } from "../api/customer.api";
+import CustomerForm from "../components/CustomerForm";
+import NotesSection from "../components/NotesSection";
+import TasksSection from "../components/TaskSection";
 import type { CustomerCreate } from "../types/customer.types";
 
 export default function CustomerDetailsPage() {
@@ -19,28 +25,47 @@ export default function CustomerDetailsPage() {
 
   const queryClient = useQueryClient();
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] =
+    useState(false);
 
   const customerQuery = useQuery({
     queryKey: ["customers", customerId],
-    queryFn: () => CustomerService.getCustomer(customerId!),
+    queryFn: () =>
+      CustomerService.getCustomer(customerId!),
     enabled: Boolean(customerId),
   });
 
   const timelineQuery = useQuery({
-    queryKey: ["customers", customerId, "timeline"],
+    queryKey: [
+      "customers",
+      customerId,
+      "timeline",
+    ],
     queryFn: () =>
-      CustomerService.getCustomerTimeline(customerId!),
+      CustomerService.getCustomerTimeline(
+        customerId!,
+      ),
     enabled: Boolean(customerId),
   });
 
   const updateCustomerMutation = useMutation({
     mutationFn: (data: CustomerCreate) =>
-      CustomerService.updateCustomer(customerId!, data),
+      CustomerService.updateCustomer(
+        customerId!,
+        data,
+      ),
 
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["customers", customerId],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: [
+          "customers",
+          customerId,
+          "timeline",
+        ],
       });
 
       setIsEditing(false);
@@ -51,7 +76,7 @@ export default function CustomerDetailsPage() {
     return (
       <Section>
         <Container>
-          <p className="text-sm text-danger">
+          <p className="text-text">
             Customer ID is missing.
           </p>
 
@@ -59,7 +84,10 @@ export default function CustomerDetailsPage() {
             to="/customers"
             className="mt-4 inline-block"
           >
-            <Button variant="secondary" type="button">
+            <Button
+              variant="secondary"
+              type="button"
+            >
               Back to Customers
             </Button>
           </Link>
@@ -72,7 +100,7 @@ export default function CustomerDetailsPage() {
     return (
       <Section>
         <Container>
-          <p className="text-sm text-text-secondary">
+          <p className="text-text-secondary">
             Loading customer...
           </p>
         </Container>
@@ -80,11 +108,14 @@ export default function CustomerDetailsPage() {
     );
   }
 
-  if (customerQuery.isError || !customerQuery.data) {
+  if (
+    customerQuery.isError ||
+    !customerQuery.data
+  ) {
     return (
       <Section>
         <Container>
-          <p className="text-sm text-danger">
+          <p className="text-danger">
             Unable to load this customer.
           </p>
 
@@ -92,7 +123,10 @@ export default function CustomerDetailsPage() {
             to="/customers"
             className="mt-4 inline-block"
           >
-            <Button variant="secondary" type="button">
+            <Button
+              variant="secondary"
+              type="button"
+            >
               Back to Customers
             </Button>
           </Link>
@@ -108,7 +142,7 @@ export default function CustomerDetailsPage() {
       <Container>
         <Link
           to="/customers"
-          className="text-sm font-medium text-primary transition-colors hover:text-primary-hover"
+          className="text-sm text-text-secondary hover:text-text"
         >
           ← Back to Customers
         </Link>
@@ -116,18 +150,22 @@ export default function CustomerDetailsPage() {
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <H1>
-              {customer.first_name} {customer.last_name}
+              {customer.first_name}{" "}
+              {customer.last_name}
             </H1>
 
             <Lead className="mt-3">
-              Customer profile and activity timeline.
+              Customer profile, notes, tasks,
+              and activity timeline.
             </Lead>
           </div>
 
           {!isEditing && (
             <Button
               type="button"
-              onClick={() => setIsEditing(true)}
+              onClick={() =>
+                setIsEditing(true)
+              }
             >
               Edit Customer
             </Button>
@@ -137,7 +175,8 @@ export default function CustomerDetailsPage() {
         {updateCustomerMutation.isError && (
           <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4">
             <p className="text-sm text-danger">
-              Unable to update this customer. Please try again.
+              Unable to update this customer.
+              Please try again.
             </p>
           </div>
         )}
@@ -150,21 +189,28 @@ export default function CustomerDetailsPage() {
               </h2>
 
               <p className="mt-1 text-sm text-text-secondary">
-                Update the customer's information below.
+                Update the customer's
+                information below.
               </p>
             </div>
 
             <CustomerForm
               initialValues={{
-                first_name: customer.first_name,
-                last_name: customer.last_name,
+                first_name:
+                  customer.first_name,
+                last_name:
+                  customer.last_name,
                 email: customer.email,
                 phone: customer.phone,
               }}
               onSubmit={(data) =>
-                updateCustomerMutation.mutate(data)
+                updateCustomerMutation.mutate(
+                  data,
+                )
               }
-              isSubmitting={updateCustomerMutation.isPending}
+              isSubmitting={
+                updateCustomerMutation.isPending
+              }
               submitLabel="Save Changes"
               submittingLabel="Saving..."
               onCancel={() => {
@@ -174,119 +220,145 @@ export default function CustomerDetailsPage() {
             />
           </div>
         ) : (
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold text-text">
-                Customer Information
-              </h2>
+          <div className="mt-10 space-y-6">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="p-6">
+                <h2 className="text-lg font-semibold text-text">
+                  Customer Information
+                </h2>
 
-              <dl className="mt-6 space-y-4">
-                <div>
-                  <dt className="text-sm text-text-secondary">
-                    Email
-                  </dt>
+                <dl className="mt-6 space-y-4">
+                  <div>
+                    <dt className="text-sm text-text-secondary">
+                      Email
+                    </dt>
 
-                  <dd className="mt-1 text-sm font-medium text-text">
-                    {customer.email}
-                  </dd>
-                </div>
+                    <dd className="mt-1 text-sm font-medium text-text">
+                      {customer.email}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt className="text-sm text-text-secondary">
-                    Phone
-                  </dt>
+                  <div>
+                    <dt className="text-sm text-text-secondary">
+                      Phone
+                    </dt>
 
-                  <dd className="mt-1 text-sm font-medium text-text">
-                    {customer.phone ?? "—"}
-                  </dd>
-                </div>
+                    <dd className="mt-1 text-sm font-medium text-text">
+                      {customer.phone ??
+                        "—"}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt className="text-sm text-text-secondary">
-                    Status
-                  </dt>
+                  <div>
+                    <dt className="text-sm text-text-secondary">
+                      Status
+                    </dt>
 
-                  <dd className="mt-1 text-sm font-medium capitalize text-text">
-                    {customer.status}
-                  </dd>
-                </div>
+                    <dd className="mt-1 text-sm font-medium capitalize text-text">
+                      {customer.status}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt className="text-sm text-text-secondary">
-                    Created
-                  </dt>
+                  <div>
+                    <dt className="text-sm text-text-secondary">
+                      Created
+                    </dt>
 
-                  <dd className="mt-1 text-sm font-medium text-text">
-                    {new Date(
-                      customer.created_at,
-                    ).toLocaleString()}
-                  </dd>
-                </div>
+                    <dd className="mt-1 text-sm font-medium text-text">
+                      {new Date(
+                        customer.created_at,
+                      ).toLocaleString()}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt className="text-sm text-text-secondary">
-                    Last Updated
-                  </dt>
+                  <div>
+                    <dt className="text-sm text-text-secondary">
+                      Last Updated
+                    </dt>
 
-                  <dd className="mt-1 text-sm font-medium text-text">
-                    {new Date(
-                      customer.updated_at,
-                    ).toLocaleString()}
-                  </dd>
-                </div>
-              </dl>
-            </Card>
+                    <dd className="mt-1 text-sm font-medium text-text">
+                      {new Date(
+                        customer.updated_at,
+                      ).toLocaleString()}
+                    </dd>
+                  </div>
+                </dl>
+              </Card>
 
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold text-text">
-                Timeline
-              </h2>
+              <Card className="p-6">
+                <h2 className="text-lg font-semibold text-text">
+                  Activity Timeline
+                </h2>
 
-              <div className="mt-6">
-                {timelineQuery.isLoading && (
-                  <p className="text-sm text-text-secondary">
-                    Loading timeline...
-                  </p>
-                )}
-
-                {timelineQuery.isError && (
-                  <p className="text-sm text-danger">
-                    Unable to load timeline.
-                  </p>
-                )}
-
-                {!timelineQuery.isLoading &&
-                  !timelineQuery.isError &&
-                  timelineQuery.data?.length === 0 && (
+                <div className="mt-6">
+                  {timelineQuery.isLoading && (
                     <p className="text-sm text-text-secondary">
-                      No activity recorded yet.
+                      Loading timeline...
                     </p>
                   )}
 
-                <div className="space-y-6">
-  {timelineQuery.data?.map((activity) => (
-    <div
-      key={activity.id}
-      className="border-l-2 border-border pl-4"
-    >
-      <p className="text-sm font-medium capitalize text-text">
-        Customer {activity.action}
-      </p>
+                  {timelineQuery.isError && (
+                    <p className="text-sm text-danger">
+                      Unable to load timeline.
+                    </p>
+                  )}
 
-      <p className="mt-1 text-sm text-text-secondary">
-        Customer record was {activity.action}.
-      </p>
+                  {!timelineQuery.isLoading &&
+                    !timelineQuery.isError &&
+                    timelineQuery.data
+                      ?.length === 0 && (
+                      <p className="text-sm text-text-secondary">
+                        No activity recorded
+                        yet.
+                      </p>
+                    )}
 
-      <p className="mt-2 text-xs text-text-secondary">
-        {new Date(
-          activity.created_at,
-        ).toLocaleString()}
-      </p>
-    </div>
-  ))}
-</div>
-              </div>
-            </Card>
+                  <div className="space-y-6">
+                    {timelineQuery.data?.map(
+                      (activity) => (
+                        <div
+                          key={activity.id}
+                          className="border-l-2 border-border pl-4"
+                        >
+                          <p className="text-sm font-medium text-text">
+                            Customer{" "}
+                            {activity.action}
+                          </p>
+
+                          <p className="mt-1 text-sm text-text-secondary">
+                            Customer record was{" "}
+                            {activity.action}.
+                          </p>
+
+                          {activity.actor_id && (
+                            <p className="mt-1 text-xs text-text-secondary">
+                              Actor:{" "}
+                              {activity.actor_id}
+                            </p>
+                          )}
+
+                          <p className="mt-2 text-xs text-text-secondary">
+                            {new Date(
+                              activity.created_at,
+                            ).toLocaleString()}
+                          </p>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <NotesSection
+                customerId={customerId}
+              />
+
+              <TasksSection
+                customerId={customerId}
+              />
+            </div>
           </div>
         )}
       </Container>

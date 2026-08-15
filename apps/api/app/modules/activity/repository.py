@@ -25,7 +25,7 @@ class ActivityRepository:
             entity_type=activity.entity_type,
             entity_id=activity.entity_id,
             action=activity.action,
-            performed_by=activity.performed_by,
+            actor_id=activity.actor_id,
             details=activity.details,
         )
 

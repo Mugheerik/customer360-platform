@@ -12,7 +12,7 @@ class ActivityCreate(BaseModel):
     entity_type: EntityType
     entity_id: str
     action: ActivityAction
-    performed_by: str | None = None
+    actor_id: str | None = None
     details: dict | None = None
 
 
@@ -23,6 +23,6 @@ class ActivityResponse(BaseModel):
     entity_type: EntityType
     entity_id: str
     action: ActivityAction
-    performed_by: str | None
+    actor_id: str | None
     details: dict | None
     created_at: datetime

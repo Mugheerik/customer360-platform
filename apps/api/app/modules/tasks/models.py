@@ -1,20 +1,15 @@
 from datetime import UTC, datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
-from app.modules.tasks.enums import (
-    TaskPriority,
-    TaskStatus,
-)
+from app.modules.tasks.enums import TaskPriority, TaskStatus
 
 
 class Task(Base):
-    """
-    Customer task.
-    """
+    """Customer task."""
 
     __tablename__ = "tasks"
 
@@ -33,7 +28,7 @@ class Task(Base):
         nullable=False,
     )
 
-    assigned_to: Mapped[str | None] = mapped_column(
+    assigned_to: Mapped[UUID | None] = mapped_column(
         ForeignKey(
             "users.id",
             ondelete="SET NULL",
@@ -54,6 +49,7 @@ class Task(Base):
     status: Mapped[TaskStatus] = mapped_column(
         Enum(
             TaskStatus,
+            name="task_status",
             values_callable=lambda enum: [item.value for item in enum],
         ),
         default=TaskStatus.TODO,
@@ -63,6 +59,7 @@ class Task(Base):
     priority: Mapped[TaskPriority] = mapped_column(
         Enum(
             TaskPriority,
+            name="task_priority",
             values_callable=lambda enum: [item.value for item in enum],
         ),
         default=TaskPriority.MEDIUM,

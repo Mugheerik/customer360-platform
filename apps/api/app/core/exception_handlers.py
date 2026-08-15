@@ -5,6 +5,7 @@ from app.core.exceptions import (
     ConflictError,
     CustomerNotFoundError,
     ForbiddenError,
+    NoteNotFoundError,
     TaskNotFoundError,
     UnauthorizedError,
     UserNotFoundError,
@@ -41,6 +42,21 @@ def register_exception_handlers(app: FastAPI) -> None:
             content={
                 "error": {
                     "code": "USER_NOT_FOUND",
+                    "message": exc.message,
+                }
+            },
+        )
+
+    @app.exception_handler(NoteNotFoundError)
+    async def note_not_found_handler(
+        request: Request,
+        exc: NoteNotFoundError,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "error": {
+                    "code": "NOTE_NOT_FOUND",
                     "message": exc.message,
                 }
             },

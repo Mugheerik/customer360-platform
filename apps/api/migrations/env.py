@@ -6,27 +6,27 @@ from sqlalchemy import engine_from_config, pool
 from app.core.config import settings
 from app.database.base import Base
 from app.modules.activity.models import ActivityLog  # noqa: F401
-
-# Import all SQLAlchemy models here
 from app.modules.customers.models import Customer  # noqa: F401
 from app.modules.notes.models import Note  # noqa: F401
 from app.modules.tasks.models import Task  # noqa: F401
 from app.modules.users.models import User  # noqa: F401
 
-# Import all SQLAlchemy models here
-
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option(
+    "sqlalchemy.url",
+    settings.database_url,
+)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
 
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode."""
+    """Run migrations in offline mode."""
 
     url = config.get_main_option("sqlalchemy.url")
 
@@ -43,7 +43,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
+    """Run migrations in online mode."""
 
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),

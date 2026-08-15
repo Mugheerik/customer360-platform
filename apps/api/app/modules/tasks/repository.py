@@ -2,10 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.tasks.models import Task
-from app.modules.tasks.schemas import (
-    TaskCreate,
-    TaskUpdate,
-)
+from app.modules.tasks.schemas import TaskCreate, TaskUpdate
 
 
 class TaskRepository:
@@ -44,12 +41,8 @@ class TaskRepository:
     ) -> list[Task]:
         statement = (
             select(Task)
-            .where(
-                Task.customer_id == customer_id,
-            )
-            .order_by(
-                Task.created_at.desc(),
-            )
+            .where(Task.customer_id == customer_id)
+            .order_by(Task.created_at.desc())
         )
 
         return list(self.db.scalars(statement).all())
@@ -60,6 +53,18 @@ class TaskRepository:
     ) -> Task | None:
         statement = select(Task).where(
             Task.id == task_id,
+        )
+
+        return self.db.scalar(statement)
+
+    def get_by_id_for_customer(
+        self,
+        task_id: str,
+        customer_id: str,
+    ) -> Task | None:
+        statement = select(Task).where(
+            Task.id == task_id,
+            Task.customer_id == customer_id,
         )
 
         return self.db.scalar(statement)

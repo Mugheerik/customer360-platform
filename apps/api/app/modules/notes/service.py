@@ -2,7 +2,10 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import CustomerNotFoundError
+from app.core.exceptions import (
+    CustomerNotFoundError,
+    NoteNotFoundError,
+)
 from app.core.uow import UnitOfWork
 from app.modules.activity.enums import (
     ActivityAction,
@@ -39,10 +42,14 @@ class NoteService:
         author_id: str | None,
         note: NoteCreate,
     ) -> Note:
-        customer = self.customers.get_by_id(customer_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
 
         if customer is None:
-            raise CustomerNotFoundError(customer_id)
+            raise CustomerNotFoundError(
+                customer_id,
+            )
 
         logger.info(
             "Creating note for customer '%s'",
@@ -50,9 +57,9 @@ class NoteService:
         )
 
         created_note = self.notes.create(
-            customer_id,
-            author_id,
-            note,
+            customer_id=customer_id,
+            author_id=author_id,
+            note=note,
         )
 
         self.activities.create(
@@ -60,9 +67,10 @@ class NoteService:
                 entity_type=EntityType.CUSTOMER,
                 entity_id=customer_id,
                 action=ActivityAction.UPDATED,
-                performed_by=author_id,
+                actor_id=author_id,
                 details={
                     "event": "note_created",
+                    "note_id": created_note.id,
                 },
             )
         )
@@ -70,29 +78,72 @@ class NoteService:
         self.uow.commit()
         self.uow.refresh(created_note)
 
+        logger.info(
+            "Note '%s' created for customer '%s'",
+            created_note.id,
+            customer_id,
+        )
+
         return created_note
 
     def get_customer_notes(
         self,
         customer_id: str,
     ) -> list[Note]:
-        customer = self.customers.get_by_id(customer_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
 
         if customer is None:
-            raise CustomerNotFoundError(customer_id)
+            raise CustomerNotFoundError(
+                customer_id,
+            )
 
-        return self.notes.get_customer_notes(customer_id)
+        logger.info(
+            "Fetching notes for customer '%s'",
+            customer_id,
+        )
+
+        return self.notes.get_customer_notes(
+            customer_id,
+        )
 
     def update_note(
         self,
+        customer_id: str,
         note_id: str,
         data: NoteUpdate,
+        current_user_id: str | None = None,
     ) -> Note:
-        note = self.notes.get_by_id(note_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
+
+        if customer is None:
+            raise CustomerNotFoundError(
+                customer_id,
+            )
+
+        note = self.notes.get_customer_note(
+            customer_id=customer_id,
+            note_id=note_id,
+        )
 
         if note is None:
-            raise ValueError("Note not found.")
+            raise NoteNotFoundError(
+                note_id,
+            )
 
+        logger.info(
+            "Updating note '%s' for customer '%s'",
+            note_id,
+            customer_id,
+        )
+
+        # At the current stage of Customer360 there is no
+        # multi-user ownership/permission model for notes.
+        #
+        # Any authenticated active user may update a customer's note.
         updated_note = self.notes.update(
             note,
             data,
@@ -101,10 +152,12 @@ class NoteService:
         self.activities.create(
             ActivityCreate(
                 entity_type=EntityType.CUSTOMER,
-                entity_id=note.customer_id,
+                entity_id=customer_id,
                 action=ActivityAction.UPDATED,
+                actor_id=current_user_id,
                 details={
                     "event": "note_updated",
+                    "note_id": note_id,
                 },
             )
         )
@@ -112,19 +165,47 @@ class NoteService:
         self.uow.commit()
         self.uow.refresh(updated_note)
 
+        logger.info(
+            "Note '%s' updated successfully",
+            note_id,
+        )
+
         return updated_note
 
     def delete_note(
         self,
+        customer_id: str,
         note_id: str,
+        current_user_id: str | None = None,
     ) -> None:
-        note = self.notes.get_by_id(note_id)
+        customer = self.customers.get_by_id(
+            customer_id,
+        )
+
+        if customer is None:
+            raise CustomerNotFoundError(
+                customer_id,
+            )
+
+        note = self.notes.get_customer_note(
+            customer_id=customer_id,
+            note_id=note_id,
+        )
 
         if note is None:
-            raise ValueError("Note not found.")
+            raise NoteNotFoundError(
+                note_id,
+            )
 
-        customer_id = note.customer_id
+        logger.info(
+            "Deleting note '%s' from customer '%s'",
+            note_id,
+            customer_id,
+        )
 
+        # There is currently no note ownership/permission
+        # restriction because Customer360 has not implemented
+        # multi-user authorization for notes yet.
         self.notes.delete(note)
 
         self.activities.create(
@@ -132,10 +213,17 @@ class NoteService:
                 entity_type=EntityType.CUSTOMER,
                 entity_id=customer_id,
                 action=ActivityAction.UPDATED,
+                actor_id=current_user_id,
                 details={
                     "event": "note_deleted",
+                    "note_id": note_id,
                 },
             )
         )
 
         self.uow.commit()
+
+        logger.info(
+            "Note '%s' deleted successfully",
+            note_id,
+        )

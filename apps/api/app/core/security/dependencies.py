@@ -21,18 +21,16 @@ def get_current_user(
     Return the authenticated user.
     """
 
-    print("=" * 50)
-    print("TOKEN:", token)
-
     user_id = decode_access_token(token)
-    print("DECODED USER ID:", user_id)
 
     repository = UserRepository(db)
 
     user = repository.get_by_id(user_id)
 
     if user is None:
-        raise UnauthorizedError("Invalid authentication credentials.")
+        raise UnauthorizedError(
+            "Invalid authentication credentials.",
+        )
 
     return user
 
@@ -58,6 +56,8 @@ def require_superuser(
     """
 
     if not current_user.is_superuser:
-        raise ForbiddenError("Insufficient permissions.")
+        raise ForbiddenError(
+            "Insufficient permissions.",
+        )
 
     return current_user

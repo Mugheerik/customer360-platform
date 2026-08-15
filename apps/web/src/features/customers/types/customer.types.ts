@@ -1,4 +1,6 @@
-export type CustomerStatus = "active" | "inactive";
+export type CustomerStatus =
+  | "active"
+  | "inactive";
 
 export type Customer = {
   id: string;
@@ -56,7 +58,7 @@ export type CustomerTimelineItem = {
   entity_type: string;
   entity_id: string;
   action: string;
-  performed_by: string | null;
+  actor_id: string | null;
   details: Record<string, unknown> | null;
   created_at: string;
 };

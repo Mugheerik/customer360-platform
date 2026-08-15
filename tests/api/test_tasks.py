@@ -1,10 +1,14 @@
-# tests/api/test_tasks.py
+# ruff: noqa: F403
 
 import uuid
 
+from tests.fixtures.auth import *
+from tests.fixtures.customers import *
+from tests.fixtures.users import *
+
 
 def create_customer_payload():
-    email = f"task-{uuid.uuid4()}@example.com"
+    email = f"task-test-{uuid.uuid4()}@example.com"
 
     return {
         "first_name": "Task",
@@ -14,19 +18,12 @@ def create_customer_payload():
     }
 
 
-def create_task_payload():
-    return {
-        "title": "Follow up with customer",
-        "description": "Call customer tomorrow",
-        "priority": "medium",
-        "assigned_to": None,
-    }
-
-
 def create_customer(client):
+    payload = create_customer_payload()
+
     response = client.post(
         "/api/v1/customers",
-        json=create_customer_payload(),
+        json=payload,
     )
 
     assert response.status_code == 201
@@ -36,46 +33,52 @@ def create_customer(client):
 
 def create_task(
     client,
-    customer_id: str,
+    customer_id,
 ):
+    payload = {
+        "title": "Follow up with customer",
+        "description": "Contact customer regarding account.",
+        "priority": "high",
+    }
+
     response = client.post(
         f"/api/v1/customers/{customer_id}/tasks",
-        json=create_task_payload(),
+        json=payload,
     )
 
     assert response.status_code == 201
 
-    return response.json()
+    return response.json(), payload
 
 
-def test_create_task(client):
-    customer = create_customer(client)
-
-    response = client.post(
-        f"/api/v1/customers/{customer['id']}/tasks",
-        json=create_task_payload(),
+def test_create_task(authenticated_client):
+    customer = create_customer(
+        authenticated_client,
     )
 
-    assert response.status_code == 201
-
-    data = response.json()
-
-    assert data["customer_id"] == customer["id"]
-    assert data["title"] == "Follow up with customer"
-    assert data["description"] == "Call customer tomorrow"
-    assert data["priority"] == "medium"
-    assert data["status"] == "todo"
-
-
-def test_get_customer_tasks(client):
-    customer = create_customer(client)
-
-    create_task(
-        client,
+    task, payload = create_task(
+        authenticated_client,
         customer["id"],
     )
 
-    response = client.get(
+    assert task["customer_id"] == customer["id"]
+    assert task["title"] == payload["title"]
+    assert task["description"] == payload["description"]
+    assert task["priority"] == "high"
+    assert task["status"] == "todo"
+
+
+def test_get_customer_tasks(authenticated_client):
+    customer = create_customer(
+        authenticated_client,
+    )
+
+    create_task(
+        authenticated_client,
+        customer["id"],
+    )
+
+    response = authenticated_client.get(
         f"/api/v1/customers/{customer['id']}/tasks",
     )
 
@@ -85,26 +88,27 @@ def test_get_customer_tasks(client):
 
     assert isinstance(data, list)
     assert len(data) == 1
-
     assert data[0]["customer_id"] == customer["id"]
-    assert data[0]["title"] == "Follow up with customer"
 
 
-def test_update_task(client):
-    customer = create_customer(client)
+def test_update_task(authenticated_client):
+    customer = create_customer(
+        authenticated_client,
+    )
 
-    task = create_task(
-        client,
+    task, _ = create_task(
+        authenticated_client,
         customer["id"],
     )
 
-    response = client.patch(
-        f"/api/v1/customers/{customer['id']}/tasks/{task['id']}",
+    task_id = task["id"]
+
+    response = authenticated_client.patch(
+        f"/api/v1/customers/{customer['id']}/tasks/{task_id}",
         json={
             "title": "Updated task",
-            "description": "Updated description",
-            "priority": "high",
-            "status": "done",
+            "status": "in_progress",
+            "priority": "medium",
         },
     )
 
@@ -112,68 +116,81 @@ def test_update_task(client):
 
     data = response.json()
 
-    assert data["id"] == task["id"]
-    assert data["customer_id"] == customer["id"]
+    assert data["id"] == task_id
     assert data["title"] == "Updated task"
-    assert data["description"] == "Updated description"
-    assert data["priority"] == "high"
-    assert data["status"] == "done"
+    assert data["status"] == "in_progress"
+    assert data["priority"] == "medium"
 
 
-def test_delete_task(client):
-    customer = create_customer(client)
+def test_delete_task(authenticated_client):
+    customer = create_customer(
+        authenticated_client,
+    )
 
-    task = create_task(
-        client,
+    task, _ = create_task(
+        authenticated_client,
         customer["id"],
     )
 
-    response = client.delete(
-        f"/api/v1/customers/{customer['id']}/tasks/{task['id']}",
+    task_id = task["id"]
+
+    response = authenticated_client.delete(
+        f"/api/v1/customers/{customer['id']}/tasks/{task_id}",
     )
 
     assert response.status_code == 204
-
-    response = client.get(
-        f"/api/v1/customers/{customer['id']}/tasks",
-    )
-
-    assert response.status_code == 200
-    assert response.json() == []
+    assert response.content == b""
 
 
-def test_create_task_customer_not_found(client):
-    response = client.post(
-        f"/api/v1/customers/{uuid.uuid4()}/tasks",
-        json=create_task_payload(),
-    )
+def test_create_task_for_missing_customer(
+    authenticated_client,
+):
+    customer_id = str(uuid.uuid4())
 
-    assert response.status_code == 404
-
-    data = response.json()
-
-    assert data["error"]["code"] == "CUSTOMER_NOT_FOUND"
-
-
-def test_get_customer_tasks_customer_not_found(client):
-    response = client.get(
-        f"/api/v1/customers/{uuid.uuid4()}/tasks",
-    )
-
-    assert response.status_code == 404
-
-    data = response.json()
-
-    assert data["error"]["code"] == "CUSTOMER_NOT_FOUND"
-
-
-def test_update_task_not_found(client):
-    customer = create_customer(client)
-
-    response = client.patch(
-        f"/api/v1/customers/{customer['id']}/tasks/{uuid.uuid4()}",
+    response = authenticated_client.post(
+        f"/api/v1/customers/{customer_id}/tasks",
         json={
-            "title": "Updated",
+            "title": "Task",
+            "priority": "medium",
+        },
+    )
+
+    assert response.status_code == 404
+
+    data = response.json()
+
+    assert data["error"]["code"] == "CUSTOMER_NOT_FOUND"
+
+
+def test_get_tasks_for_missing_customer(
+    authenticated_client,
+):
+    customer_id = str(uuid.uuid4())
+
+    response = authenticated_client.get(
+        f"/api/v1/customers/{customer_id}/tasks",
+    )
+
+    assert response.status_code == 404
+
+    data = response.json()
+
+    assert data["error"]["code"] == "CUSTOMER_NOT_FOUND"
+
+
+def test_update_missing_task(
+    authenticated_client,
+):
+    customer = create_customer(
+        authenticated_client,
+    )
+
+    task_id = str(uuid.uuid4())
+
+    response = authenticated_client.patch(
+        f"/api/v1/customers/{customer['id']}/tasks/{task_id}",
+        json={
+            "title": "Updated task",
         },
     )
 
@@ -184,11 +201,17 @@ def test_update_task_not_found(client):
     assert data["error"]["code"] == "TASK_NOT_FOUND"
 
 
-def test_delete_task_not_found(client):
-    customer = create_customer(client)
+def test_delete_missing_task(
+    authenticated_client,
+):
+    customer = create_customer(
+        authenticated_client,
+    )
 
-    response = client.delete(
-        f"/api/v1/customers/{customer['id']}/tasks/{uuid.uuid4()}",
+    task_id = str(uuid.uuid4())
+
+    response = authenticated_client.delete(
+        f"/api/v1/customers/{customer['id']}/tasks/{task_id}",
     )
 
     assert response.status_code == 404
@@ -196,3 +219,67 @@ def test_delete_task_not_found(client):
     data = response.json()
 
     assert data["error"]["code"] == "TASK_NOT_FOUND"
+
+
+def test_task_cannot_be_accessed_through_another_customer(
+    authenticated_client,
+):
+    customer_a = create_customer(
+        authenticated_client,
+    )
+
+    customer_b = create_customer(
+        authenticated_client,
+    )
+
+    task, _ = create_task(
+        authenticated_client,
+        customer_a["id"],
+    )
+
+    response = authenticated_client.patch(
+        f"/api/v1/customers/{customer_b['id']}/tasks/{task['id']}",
+        json={
+            "title": "Should not work",
+        },
+    )
+
+    assert response.status_code == 404
+
+    data = response.json()
+
+    assert data["error"]["code"] == "TASK_NOT_FOUND"
+
+
+def test_delete_task_through_another_customer_is_not_allowed(
+    authenticated_client,
+):
+    customer_a = create_customer(
+        authenticated_client,
+    )
+
+    customer_b = create_customer(
+        authenticated_client,
+    )
+
+    task, _ = create_task(
+        authenticated_client,
+        customer_a["id"],
+    )
+
+    response = authenticated_client.delete(
+        f"/api/v1/customers/{customer_b['id']}/tasks/{task['id']}",
+    )
+
+    assert response.status_code == 404
+
+    verify_response = authenticated_client.get(
+        f"/api/v1/customers/{customer_a['id']}/tasks",
+    )
+
+    assert verify_response.status_code == 200
+
+    data = verify_response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == task["id"]

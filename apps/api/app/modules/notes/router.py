@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.core.security.dependencies import get_current_user
+from app.core.security.dependencies import (
+    require_active_user,
+)
 from app.database.dependencies import get_db
 from app.modules.notes.schemas import (
     NoteCreate,
@@ -31,8 +33,12 @@ def get_note_service(
 def create_note(
     customer_id: str,
     note: NoteCreate,
-    current_user: User = Depends(get_current_user),
-    service: NoteService = Depends(get_note_service),
+    current_user: User = Depends(
+        require_active_user,
+    ),
+    service: NoteService = Depends(
+        get_note_service,
+    ),
 ) -> NoteResponse:
     created_note = service.create_note(
         customer_id=customer_id,
@@ -40,7 +46,9 @@ def create_note(
         note=note,
     )
 
-    return NoteResponse.model_validate(created_note)
+    return NoteResponse.model_validate(
+        created_note,
+    )
 
 
 @router.get(
@@ -49,9 +57,16 @@ def create_note(
 )
 def get_customer_notes(
     customer_id: str,
-    service: NoteService = Depends(get_note_service),
+    current_user: User = Depends(
+        require_active_user,
+    ),
+    service: NoteService = Depends(
+        get_note_service,
+    ),
 ) -> list[NoteResponse]:
-    notes = service.get_customer_notes(customer_id)
+    notes = service.get_customer_notes(
+        customer_id,
+    )
 
     return [NoteResponse.model_validate(note) for note in notes]
 
@@ -64,14 +79,23 @@ def update_note(
     customer_id: str,
     note_id: str,
     note: NoteUpdate,
-    service: NoteService = Depends(get_note_service),
+    current_user: User = Depends(
+        require_active_user,
+    ),
+    service: NoteService = Depends(
+        get_note_service,
+    ),
 ) -> NoteResponse:
     updated_note = service.update_note(
-        note_id,
-        note,
+        customer_id=customer_id,
+        note_id=note_id,
+        data=note,
+        current_user_id=str(current_user.id),
     )
 
-    return NoteResponse.model_validate(updated_note)
+    return NoteResponse.model_validate(
+        updated_note,
+    )
 
 
 @router.delete(
@@ -81,6 +105,15 @@ def update_note(
 def delete_note(
     customer_id: str,
     note_id: str,
-    service: NoteService = Depends(get_note_service),
+    current_user: User = Depends(
+        require_active_user,
+    ),
+    service: NoteService = Depends(
+        get_note_service,
+    ),
 ) -> None:
-    service.delete_note(note_id)
+    service.delete_note(
+        customer_id=customer_id,
+        note_id=note_id,
+        current_user_id=str(current_user.id),
+    )

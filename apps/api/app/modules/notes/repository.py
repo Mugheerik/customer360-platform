@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.notes.models import Note
@@ -40,18 +41,35 @@ class NoteRepository:
         self,
         customer_id: str,
     ) -> list[Note]:
-        return (
-            self.db.query(Note)
-            .filter(Note.customer_id == customer_id)
+        statement = (
+            select(Note)
+            .where(Note.customer_id == customer_id)
             .order_by(Note.created_at.desc())
-            .all()
         )
+
+        return list(self.db.scalars(statement).all())
 
     def get_by_id(
         self,
         note_id: str,
     ) -> Note | None:
-        return self.db.query(Note).filter(Note.id == note_id).first()
+        statement = select(Note).where(
+            Note.id == note_id,
+        )
+
+        return self.db.scalar(statement)
+
+    def get_customer_note(
+        self,
+        customer_id: str,
+        note_id: str,
+    ) -> Note | None:
+        statement = select(Note).where(
+            Note.id == note_id,
+            Note.customer_id == customer_id,
+        )
+
+        return self.db.scalar(statement)
 
     def update(
         self,

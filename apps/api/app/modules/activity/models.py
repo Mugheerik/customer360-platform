@@ -12,9 +12,7 @@ from app.modules.activity.enums import (
 
 
 class ActivityLog(Base):
-    """
-    Stores platform activity events.
-    """
+    """Audit log entry for system activity."""
 
     __tablename__ = "activity_logs"
 
@@ -27,6 +25,7 @@ class ActivityLog(Base):
     entity_type: Mapped[EntityType] = mapped_column(
         Enum(
             EntityType,
+            name="entity_type",
             values_callable=lambda enum: [item.value for item in enum],
         ),
         nullable=False,
@@ -40,12 +39,13 @@ class ActivityLog(Base):
     action: Mapped[ActivityAction] = mapped_column(
         Enum(
             ActivityAction,
+            name="activity_action",
             values_callable=lambda enum: [item.value for item in enum],
         ),
         nullable=False,
     )
 
-    performed_by: Mapped[str | None] = mapped_column(
+    actor_id: Mapped[str | None] = mapped_column(
         String(36),
         nullable=True,
     )
@@ -58,4 +58,5 @@ class ActivityLog(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
+        nullable=False,
     )

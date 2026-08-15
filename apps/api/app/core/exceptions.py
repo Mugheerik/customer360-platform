@@ -56,3 +56,13 @@ class TaskNotFoundError(Exception):
         self.task_id = task_id
         self.message = f"Task '{task_id}' was not found."
         super().__init__(self.message)
+
+
+class NoteNotFoundError(Exception):
+    """
+    Raised when a customer note cannot be found.
+    """
+
+    def __init__(self, note_id: str):
+        self.message = f"Note '{note_id}' not found."
+        super().__init__(self.message)

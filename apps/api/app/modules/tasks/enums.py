@@ -2,9 +2,7 @@ from enum import StrEnum
 
 
 class TaskStatus(StrEnum):
-    """
-    Status of a task.
-    """
+    """Status of a task."""
 
     TODO = "todo"
     IN_PROGRESS = "in_progress"
@@ -12,9 +10,7 @@ class TaskStatus(StrEnum):
 
 
 class TaskPriority(StrEnum):
-    """
-    Priority of a task.
-    """
+    """Priority of a task."""
 
     LOW = "low"
     MEDIUM = "medium"
