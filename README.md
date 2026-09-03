@@ -1,615 +1,222 @@
 # Customer360
 
-### Enterprise Platform Engineering Laboratory
+### Production-Oriented Customer Management Platform & Engineering Laboratory
 
 [![CI](https://github.com/Mugheerik/customer360-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Mugheerik/customer360-platform/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.13-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791.svg)
+![React](https://img.shields.io/badge/React-19-61DAFB.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6.svg)
 ![License](https://img.shields.io/github/license/Mugheerik/customer360-platform)
 ![Release](https://img.shields.io/github/v/release/Mugheerik/customer360-platform)
-![Status](https://img.shields.io/badge/status-active%20development-brightgreen)
-![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
-![Ruff](https://img.shields.io/badge/lint-Ruff-blue)
-![pip-audit](https://img.shields.io/badge/security-passing-brightgreen)
-![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)
+![Ruff](https://img.shields.io/badge/lint-Ruff-blue.svg)
+![pip-audit](https://img.shields.io/badge/security-passing-brightgreen.svg)
+![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen.svg)
 
 ---
 
-> **Building an enterprise-grade customer platform while exploring platform engineering, software architecture, and production software engineering.**
+> **A production-oriented customer management platform built to demonstrate backend engineering, software architecture, database engineering, testing, and modern web application development.**
 
-Customer360 is a long-term **Platform Engineering Laboratory** dedicated to designing, building, testing, and evolving enterprise-grade customer-centric software systems.
+Customer360 is a full-stack customer management platform and engineering laboratory focused on building software with production-oriented engineering practices.
 
-Rather than focusing solely on CRM functionality, Customer360 incrementally develops reusable platform capabilities—including identity, security, customer domain services, workflow orchestration, event-driven architecture, analytics, automation, and AI-assisted business systems.
+The project combines a **FastAPI backend, React/TypeScript web application, and PostgreSQL database** using a modular architecture designed for maintainability, testability, and future evolution.
 
-Every release emphasizes architectural quality, maintainability, observability, testability, and extensibility, making Customer360 both a production-oriented software platform and a long-term engineering portfolio.
+Rather than focusing only on application features, Customer360 is used to practice the engineering foundations behind reliable business systems:
+
+* Backend architecture
+* API design
+* Authentication and authorization
+* Database engineering
+* Transaction management
+* Automated testing
+* Frontend architecture
+* CI/CD
+* Code quality
+* Containerized infrastructure
+* Versioned releases
+
+The result is both a functional customer management application and a practical engineering laboratory for exploring how production-oriented software systems are designed and built.
 
 ---
 
 # Project at a Glance
 
-| Category | Technology |
-|----------|------------|
-| Project Type | Platform Engineering Laboratory |
-| Architecture | Clean Architecture |
-| Design Style | Modular Monolith |
-| Language | Python 3.13 |
-| Framework | FastAPI |
-| Database | PostgreSQL 17 |
-| ORM | SQLAlchemy 2.0 |
-| Authentication | JWT |
-| Testing | Pytest + Coverage |
-| Formatting | Ruff |
-| Linting | Ruff |
-| Dependency Audit | pip-audit |
-| Git Hooks | pre-commit |
-| CI/CD | GitHub Actions |
-| Package Manager | uv |
-| Current Milestone | Customer Domain (v0.3.0) |
+| Category          | Technology                              |
+| ----------------- | --------------------------------------- |
+| Project Type      | Full-Stack Customer Management Platform |
+| Engineering Focus | Backend & Platform Engineering          |
+| Architecture      | Clean Architecture principles           |
+| Design Style      | Modular Monolith                        |
+| Backend           | FastAPI / Python                        |
+| Frontend          | React / TypeScript                      |
+| Database          | PostgreSQL 17                           |
+| ORM               | SQLAlchemy 2.0                          |
+| Migrations        | Alembic                                 |
+| Authentication    | JWT                                     |
+| Authorization     | Role-Based Access Control               |
+| API Client        | Axios                                   |
+| Server State      | TanStack Query                          |
+| Client State      | Zustand                                 |
+| Testing           | Pytest + Coverage                       |
+| Backend Quality   | Ruff                                    |
+| Frontend Quality  | ESLint + Prettier                       |
+| Dependency Audit  | pip-audit                               |
+| Git Hooks         | pre-commit                              |
+| Package Manager   | uv                                      |
+| Infrastructure    | Docker                                  |
+| CI/CD             | GitHub Actions                          |
+| Versioning        | Semantic Versioning                     |
+| Current Release   | v0.3.0                                  |
 
 ---
 
-# Platform Vision
+# Platform Overview
 
-Customer360 is more than a backend application.
+Customer360 provides an authenticated customer management environment for managing customer information, notes, tasks, and activity history.
 
-It is an engineering laboratory for exploring how modern enterprise software platforms are architected, implemented, tested, deployed, and continuously evolved.
-
-The project intentionally prioritizes reusable architectural capabilities over isolated application features.
-
-Instead of asking:
-
-> *"What feature should we build next?"*
-
-Customer360 asks:
-
-> *"What platform capability should we establish next?"*
-
-This mindset reflects how mature engineering organizations design software systems that can evolve over many years while remaining maintainable, scalable, and adaptable.
-
-The long-term vision is to evolve Customer360 into an intelligent customer platform capable of supporting:
-
-- Customer Identity
-- Customer Domain Services
-- Platform Services
-- Workflow Automation
-- Event-Driven Processing
-- Analytics & Reporting
-- AI-Assisted Business Systems
-- External Integrations
-
----
-
-# Engineering Philosophy
-
-Customer360 is developed according to a simple engineering philosophy.
-
-Every milestone should satisfy four principles.
-
-## 1. Solve a Real Business Problem
-
-Every capability should represent functionality that could exist in a production business platform.
-
----
-
-## 2. Build Reusable Platform Capabilities
-
-Customer360 is not developed as a collection of isolated APIs.
-
-Instead, every release strengthens reusable capabilities that other business systems could build upon.
-
----
-
-## 3. Practice Production Software Engineering
-
-Engineering quality is considered a feature.
-
-Every release includes:
-
-- Automated Testing
-- Static Analysis
-- Continuous Integration
-- Database Versioning
-- Documentation
-- Semantic Versioning
-- Verified Git Commits
-
----
-
-## 4. Design for Long-Term Evolution
-
-Customer360 is intentionally designed to evolve.
-
-Architectural decisions prioritize:
-
-- Maintainability
-- Scalability
-- Testability
-- Extensibility
-- Clear Separation of Concerns
-
-over short-term implementation speed.
-
----
-
-# Engineering Principles
-
-Customer360 follows one guiding principle:
-
-> **Every release must leave the platform more reusable, more observable, more testable, or more extensible than the previous one.**
-
-If a change does not improve the platform in one of those dimensions, it should be reconsidered.
-
----
-
-# Platform Roadmap
-
-| Version | Milestone | Status |
-|----------|----------------------------|----------------|
-| ✅ v0.1.0 | Platform Foundation | Complete |
-| ✅ v0.2.0 | Identity & Security | Complete |
-| 🚧 v0.3.0 | Customer Domain | In Progress |
-| ⏳ v0.4.0 | Platform Services | Planned |
-| ⏳ v0.5.0 | Workflow & Events | Planned |
-| ⏳ v0.6.0 | Cloud Foundation | Planned |
-| ⏳ v0.7.0 | Intelligence Layer | Planned |
-| 🎯 v1.0.0 | Intelligent Customer Platform | Target |
-
----
-
-# Platform Evolution
-
-Instead of evolving through isolated features, Customer360 evolves by introducing progressively richer platform capabilities.
+The system is organized around a modular backend and feature-oriented frontend.
 
 ```text
-Platform Foundation
-        │
-        ▼
-Identity & Security
-        │
-        ▼
-Customer Domain
-        │
-        ▼
-Platform Services
-        │
-        ▼
-Workflow & Events
-        │
-        ▼
-Cloud Foundation
-        │
-        ▼
-Intelligence Layer
-        │
-        ▼
-Intelligent Customer Platform
+                         Customer360
+                              │
+             ┌────────────────┴────────────────┐
+             │                                 │
+             ▼                                 ▼
+       React Web App                       FastAPI API
+       TypeScript                          Python
+             │                                 │
+             │                                 ▼
+             │                           SQLAlchemy
+             │                                 │
+             │                                 ▼
+             └────────────────────────── PostgreSQL
 ```
 
-Each milestone expands the architectural capabilities of the platform while preserving engineering quality and long-term maintainability.
+The architecture intentionally remains a **modular monolith** rather than prematurely distributing the system into multiple services.
 
----
-# Platform Capabilities
-
-Customer360 evolves by introducing reusable platform capabilities rather than isolated application features.
-
-Each milestone establishes a new architectural capability that future services and business domains can build upon.
+This provides a simpler operational model while establishing architectural boundaries that can evolve if future requirements justify additional infrastructure.
 
 ---
 
-## Platform Foundation
+# Core Capabilities
 
-The Platform Foundation provides the core infrastructure required for a maintainable, scalable, and production-oriented backend.
+## Customer Management
 
-### Current Capabilities
+The Customer domain provides the primary business functionality of the platform.
 
-- FastAPI Application
-- Clean Architecture
-- Modular Monolith
-- Dependency Injection
-- SQLAlchemy ORM
-- PostgreSQL Integration
-- Alembic Database Migrations
-- Environment-Based Configuration
-- Structured Logging
+Current capabilities include:
 
-**Engineering Objective**
-
-Provide a stable foundation that future platform capabilities can extend without requiring architectural redesign.
-
----
-
-## Identity & Security
-
-Identity is the first shared platform capability introduced into Customer360.
-
-Rather than implementing authentication solely for the Customer module, the Identity capability serves as the reusable security layer for every future service.
-
-### Current Capabilities
-
-- User Registration
-- User Authentication
-- JWT Access Tokens
-- Password Hashing
-- Current User Endpoint
-- Role-Based Authorization
-- Superuser Authorization
-- Protected API Routes
-
-### Planned Evolution
-
-- Refresh Tokens
-- Password Reset
-- Email Verification
-- Multi-Factor Authentication (MFA)
-- OAuth Providers
-- Single Sign-On (SSO)
+* Customer creation
+* Customer retrieval
+* Customer updates
+* Customer activation/deactivation
+* Customer search
+* Status filtering
+* Sorting
+* Pagination
+* Customer detail views
+* Input validation
 
 ---
 
-## Customer Domain
+## Notes
 
-The Customer Domain is the platform's first business domain.
+Customers can have associated notes that provide contextual information about interactions and business activity.
 
-Beyond managing customer records, it establishes reusable domain-driven patterns that future modules can adopt.
+Current capabilities include:
 
-### Current Capabilities
-
-- Customer CRUD Operations
-- Input Validation
-- Repository Pattern
-- Service Layer
-- REST API Endpoints
-- Persistent Storage
-
-### Planned Evolution
-
-- Search
-- Filtering
-- Pagination
-- Sorting
-- Soft Deletes
-- Customer Timeline
-- Customer Relationships
-- Customer Segmentation
+* Create notes
+* View notes
+* Update notes
+* Delete notes
+* Associate notes with customers
 
 ---
 
-## Engineering Platform
+## Tasks
 
-Engineering quality is treated as a platform capability rather than a development afterthought.
+Tasks provide a lightweight workflow capability around customer activity.
 
-### Current Capabilities
+Current capabilities include:
 
-- Automated Testing
-- Transaction Rollback Test Fixtures
-- Dependency Override Testing
-- Continuous Integration
-- Ruff Formatting
-- Ruff Linting
-- Semantic Versioning
-- GitHub Releases
-- Verified Commit Signing
-
-These capabilities ensure every release meets consistent engineering quality standards.
+* Create tasks
+* Update tasks
+* Delete tasks
+* Task descriptions
+* Task status
+* Task priority
+* Due dates
+* Task assignment
+* Customer-specific task management
 
 ---
 
-## Future Platform Services
+## Activity Timeline
 
-Customer360 is intentionally designed to evolve into a reusable enterprise platform.
+Customer activity is recorded through an activity timeline.
 
-Planned platform services include:
+The timeline provides an auditable history of important customer-related actions and associates activities with the responsible actor where applicable.
 
-### Platform Services
-
-- Event Bus
-- Audit Trail
-- Notification Service
-- File Storage
-- Configuration Service
-
-### Workflow
-
-- Workflow Engine
-- Business Rules Engine
-- Scheduled Jobs
-- Task Orchestration
-
-### Analytics
-
-- Customer Analytics
-- Operational Metrics
-- Reporting APIs
-- Data Export Services
-
-### Intelligence
-
-- Recommendation Services
-- Predictive Analytics
-- AI-Assisted Business Workflows
-- Customer Intelligence
+This establishes a foundation for future audit and operational observability capabilities.
 
 ---
 
-# System Architecture
+# Authentication & Authorization
 
-Customer360 follows a layered architecture with clear separation of responsibilities while remaining flexible enough to evolve into a larger enterprise platform.
+Identity and access control are implemented as shared backend capabilities rather than being embedded directly inside the Customer domain.
 
-```text
-                        HTTP Requests
-                              │
-                              ▼
-                       FastAPI Routers
-                              │
-                              ▼
-              Authentication & Authorization
-                              │
-                              ▼
-                  Application Service Layer
-                              │
-         ┌────────────────────┼────────────────────┐
-         │                    │                    │
-         ▼                    ▼                    ▼
- Customer Domain      Identity Domain      Future Platform Services
-                                               │
-                       ┌───────────────────────┼────────────────────────┐
-                       │                       │                        │
-                  Event Bus             Workflow Engine          Audit Service
-                  (Planned)              (Planned)               (Planned)
-                                               │
-                                               ▼
-                     Repository / Data Access Layer
-                                               │
-                                               ▼
-                    SQLAlchemy ORM + PostgreSQL
-```
+Current capabilities include:
+
+* User registration
+* User authentication
+* JWT access tokens
+* Password hashing
+* Current-user endpoint
+* Protected routes
+* Role-based authorization
+* Superuser authorization
+* Authenticated user context
+
+The frontend integrates with the authentication API and maintains the authenticated session across browser refreshes.
 
 ---
 
-# Architectural Layers
+# Frontend Application
 
-## API Layer
+The web application is built with React and TypeScript and communicates with the FastAPI backend through a centralized API layer.
 
-Responsible for:
+## Frontend Capabilities
 
-- HTTP Routing
-- Request Validation
-- Response Serialization
-- Dependency Injection
-
----
-
-## Identity Layer
-
-Responsible for:
-
-- Authentication
-- Authorization
-- User Context
-- Access Control
-
----
-
-## Application Layer
-
-Responsible for:
-
-- Business Rules
-- Use Cases
-- Domain Coordination
-- Transaction Boundaries
+* React 19
+* TypeScript
+* Vite
+* React Router
+* TanStack Query
+* React Hook Form
+* Zod validation
+* Zustand
+* Axios
+* Tailwind CSS
+* Shared UI components
+* Protected routes
+* Persistent authentication state
+* Loading and error states
+* Customer search
+* Filtering
+* Sorting
+* Pagination
+* Customer management
+* Notes
+* Tasks
+* Activity Timeline
 
 ---
-
-## Repository Layer
-
-Responsible for:
-
-- Data Access
-- Query Encapsulation
-- Persistence Logic
-
----
-
-## Database Layer
-
-Responsible for:
-
-- Persistent Storage
-- Relational Integrity
-- Database Versioning
-- Performance Optimization
-
----
-
-# Repository Layout
-
-Customer360 is organized as a multi-application engineering repository that separates application code, documentation, infrastructure, automation, and testing.
-
-```text
-customer360-platform/
-│
-├── apps/
-│   ├── api/          # FastAPI backend
-│   └── web/          # React frontend
-│
-├── docs/             # Architecture and project documentation
-├── infra/            # Infrastructure and deployment resources
-├── scripts/          # Development automation and utility scripts
-├── tests/            # Repository-level and integration tests
-│
-├── .github/          # CI/CD workflows
-├── CHANGELOG.md
-├── README.md
-└── LICENSE
-```
-
-## Repository Philosophy
-
-The repository is intentionally organized by engineering responsibility rather than implementation details.
-
-| Directory   | Responsibility                                         |
-| ----------- | ------------------------------------------------------ |
-| `apps/`     | Application services and business applications         |
-| `apps/api/` | FastAPI backend and platform services                  |
-| `apps/web/` | React frontend application                             |
-| `docs/`     | Architecture, ADRs, roadmap, and project documentation |
-| `infra/`    | Infrastructure and deployment configuration            |
-| `scripts/`  | Development automation and utility scripts             |
-| `tests/`    | Repository-level and integration testing               |
-
-This structure allows the platform to grow into multiple applications and services without mixing frontend, backend, infrastructure, and documentation concerns.
-
----
-
-# Engineering Standards
-
-Customer360 follows modern software engineering practices commonly used in professional backend and platform engineering teams.
-
-Every contribution is expected to satisfy the platform's engineering quality standards before being merged.
-
-Backend changes are validated locally through pre-commit hooks before reaching the CI pipeline. These checks currently include formatting, linting, dependency auditing, and automated tests.
-
----
-
-## Code Quality
-
-Customer360 emphasizes consistency, readability, and maintainability.
-
-Current engineering practices include:
-
-* Strong Typing
-* Clean Architecture
-* Repository Pattern
-* Service Layer
-* Dependency Injection
-* Environment-Based Configuration
-* Modular Project Structure
-
----
-
-## Testing Strategy
-
-Testing is treated as a first-class engineering activity rather than a final verification step.
-
-The platform currently includes:
-
-* Unit Tests
-* API Integration Tests
-* Authentication Tests
-* Authorization Tests
-* Database Transaction Rollback Fixtures
-* Dependency Override Testing
-
-Every new capability should include automated tests before release.
-
----
-
-## Database Engineering
-
-Customer360 uses modern database engineering practices to ensure schema evolution remains predictable and reproducible.
-
-Current practices include:
-
-* SQLAlchemy ORM
-* Alembic Database Migrations
-* Version-Controlled Schema Changes
-* Transaction Management
-
-Future releases will introduce:
-
-* Seed Data
-* Database Performance Optimization
-* Query Profiling
-* Data Archival Strategies
-
----
-
-## Continuous Integration
-
-Every pull request and release is automatically validated through GitHub Actions.
-
-The CI pipeline verifies:
-
-* Ruff Formatting
-* Ruff Linting
-* Dependency Installation
-* Database Migration
-* Automated Tests
-* Build Integrity
-
-Only changes that satisfy every quality gate are considered release-ready.
-
----
-
-## Release Management
-
-Customer360 follows Semantic Versioning.
-
-Every release includes:
-
-* Version Tag
-* GitHub Release
-* Updated Documentation
-* Updated CHANGELOG
-* Passing CI Pipeline
-
-This ensures every version is reproducible and properly documented.
-
----
-
-# Technology Stack
-
-## Backend
-
-| Category            | Technology     |
-| ------------------- | -------------- |
-| Language            | Python 3.13    |
-| Framework           | FastAPI        |
-| ORM                 | SQLAlchemy 2.0 |
-| Database            | PostgreSQL 17  |
-| Database Migrations | Alembic        |
-| Validation          | Pydantic v2    |
-| Authentication      | JWT            |
-| Package Manager     | uv             |
-| Testing             | Pytest         |
-| Coverage            | pytest-cov     |
-| Formatting          | Ruff           |
-| Linting             | Ruff           |
-| Dependency Audit    | pip-audit      |
-| Git Hooks           | pre-commit     |
-| Infrastructure      | Docker         |
-| CI/CD               | GitHub Actions |
-
-## Frontend
-
-| Category     | Technology      |
-| ------------ | --------------- |
-| Language     | TypeScript      |
-| Framework    | React 19        |
-| Build Tool   | Vite            |
-| Routing      | React Router    |
-| Server State | TanStack Query  |
-| Forms        | React Hook Form |
-| Validation   | Zod             |
-| Client State | Zustand         |
-| HTTP Client  | Axios           |
-| Styling      | Tailwind CSS    |
-| Code Quality | ESLint          |
-| Formatting   | Prettier        |
-
----
-
-# Web Application
-
-The Customer360 web application provides the frontend application layer for interacting with the platform.
-
-The frontend follows a feature-oriented architecture with shared UI primitives, application layouts, centralized authentication state, and a dedicated API client.
 
 ## Frontend Architecture
 
-The frontend source tree is organized as follows:
+The frontend follows a feature-oriented structure:
 
 ```text
 apps/web/src/
@@ -625,6 +232,12 @@ apps/web/src/
 │
 ├── features/
 │   ├── auth/
+│   ├── customer/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── types/
+│   │   └── index.ts
 │   ├── dashboard/
 │   └── home/
 │
@@ -635,26 +248,15 @@ apps/web/src/
 └── store/
 ```
 
-## Frontend Capabilities
+The customer feature owns customer-specific UI, API integration, types, Notes, Tasks, and Activity Timeline functionality.
 
-* React 19 + TypeScript
-* Vite
-* React Router
-* TanStack Query
-* React Hook Form
-* Zod Validation
-* Zustand State Management
-* Axios API Client
-* Tailwind CSS
-* Shared UI Components
-* Feature-Oriented Architecture
-* Protected Routes
-* JWT Authentication
-* Persistent Authentication State
+Shared concerns remain outside the feature boundary.
 
-## Authentication Flow
+---
 
-The frontend authentication flow integrates directly with the FastAPI backend:
+# Authentication Flow
+
+The frontend authentication flow integrates directly with the FastAPI authentication endpoints.
 
 ```text
 Login Form
@@ -669,7 +271,7 @@ POST /api/v1/auth/login
 JWT Access Token
     │
     ▼
-Zustand Auth Store
+Authentication State
     │
     ▼
 Authenticated API Client
@@ -681,79 +283,780 @@ GET /api/v1/auth/me
 Authenticated User
     │
     ▼
-Protected Dashboard
+Protected Application
 ```
 
-The access token is persisted locally so the authenticated session can survive browser refreshes.
-
-## Frontend Engineering Standards
-
-The web application follows the same engineering principles as the backend while using tooling appropriate to the TypeScript ecosystem.
-
-Current frontend quality practices include:
-
-* TypeScript type checking
-* ESLint
-* Prettier
-* Tailwind CSS
-* Production build validation
-* Feature-oriented project structure
-* Shared UI component architecture
+The access token is persisted locally so that the authenticated session can survive a browser refresh.
 
 ---
 
-# Engineering Metrics
+# System Architecture
 
-The project emphasizes measurable engineering quality rather than feature count.
+Customer360 follows a layered backend architecture with clear separation between HTTP concerns, application logic, persistence, and infrastructure.
 
-| Metric | Status |
-|---------|--------|
-| Automated Testing | ✅ |
-| Test Coverage | ✅ |
-| Database Migration Validation | ✅ |
-| Ruff Formatting | ✅ |
-| Ruff Linting | ✅ |
-| Dependency Audit | ✅ |
-| Git Hooks | ✅ |
-| Continuous Integration | ✅ |
-| Semantic Versioning | ✅ |
-| GitHub Releases | ✅ |
-| Verified Commit Signing | ✅ |
+```text
+HTTP Request
+      │
+      ▼
+FastAPI Router
+      │
+      ▼
+Authentication / Authorization
+      │
+      ▼
+Application Service
+      │
+      ▼
+Repository
+      │
+      ▼
+SQLAlchemy
+      │
+      ▼
+PostgreSQL
+```
+
+The modular monolith structure allows business domains and platform capabilities to remain separated while sharing a single deployable backend.
+
+---
+
+# Architectural Layers
+
+## API Layer
+
+Responsible for:
+
+* HTTP routing
+* Request handling
+* Request validation
+* Response serialization
+* Dependency injection
+
+---
+
+## Identity Layer
+
+Responsible for:
+
+* Authentication
+* Authorization
+* User context
+* Access control
+
+---
+
+## Application Layer
+
+Responsible for:
+
+* Business rules
+* Use cases
+* Domain coordination
+* Transaction boundaries
+
+---
+
+## Repository Layer
+
+Responsible for:
+
+* Database access
+* Query encapsulation
+* Persistence operations
+
+---
+
+## Database Layer
+
+Responsible for:
+
+* Persistent storage
+* Relational integrity
+* Schema evolution
+* Database transactions
+
+---
+
+# Engineering Patterns
+
+Customer360 applies several established backend engineering patterns.
+
+## Clean Architecture
+
+Application responsibilities are separated so that business logic is not tightly coupled to infrastructure or HTTP concerns.
+
+---
+
+## Repository Pattern
+
+Database access is encapsulated behind repository interfaces and implementations.
+
+This keeps persistence concerns separate from application-level business logic.
+
+---
+
+## Service Layer
+
+Application services coordinate business operations and enforce application-level rules.
+
+---
+
+## Dependency Injection
+
+FastAPI dependency injection is used to provide application services, repositories, authentication context, and other dependencies.
+
+This also makes components easier to isolate during testing.
+
+---
+
+## Transaction Boundaries
+
+Database operations are coordinated through explicit transaction boundaries.
+
+Repositories stage database changes while the application/service layer controls commit and rollback behavior.
+
+This provides predictable transaction semantics and improves testability.
+
+---
+
+# Database Engineering
+
+Customer360 uses PostgreSQL as its relational persistence layer.
+
+Current database practices include:
+
+* PostgreSQL 17
+* SQLAlchemy 2.0
+* Alembic migrations
+* Version-controlled schema changes
+* Transaction management
+* Relational constraints
+* Automated migration validation
+
+Current domain entities include:
+
+```text
+users
+customers
+notes
+tasks
+activity_logs
+```
+
+Database schema changes are managed through Alembic rather than manual database modification.
+
+---
+
+# Testing Strategy
+
+Testing is treated as a first-class engineering activity.
+
+The backend test suite covers areas including:
+
+* API behavior
+* Authentication
+* Authorization
+* Database operations
+* Customer functionality
+* Notes
+* Tasks
+* Transaction behavior
+* Rollback behavior
+* Dependency overrides
+
+The project uses:
+
+* Pytest
+* pytest-cov
+* FastAPI test clients
+* Database test fixtures
+* Transaction rollback fixtures
+
+The goal is not simply to maximize coverage, but to verify important application behavior and transaction semantics.
+
+---
+
+# Code Quality
+
+Backend quality is enforced through automated tooling.
+
+Current practices include:
+
+* Ruff formatting
+* Ruff linting
+* Type-aware Python development
+* pre-commit hooks
+* Dependency auditing with pip-audit
+
+Frontend quality is maintained through:
+
+* TypeScript
+* ESLint
+* Prettier
+* Production build validation
+
+---
+
+# Continuous Integration
+
+GitHub Actions automatically validates backend changes through the CI pipeline.
+
+The pipeline verifies important engineering gates including:
+
+* Dependency installation
+* Ruff formatting
+* Ruff linting
+* Database migration validation
+* Automated tests
+* Build integrity
+
+The goal is to prevent changes that do not satisfy the project's engineering standards from reaching the main branch.
+
+---
+
+# Containerization
+
+Docker is currently used to provide a reproducible PostgreSQL development environment.
+
+The current local infrastructure is:
+
+```text
+Docker
+└── PostgreSQL 17
+        │
+        ▼
+   Customer360 API
+        │
+        ▼
+   React Web App
+```
+
+The API and web application can be run directly through their respective development environments while PostgreSQL runs inside Docker.
+
+The infrastructure configuration is intentionally kept simple while the application architecture is established.
+
+---
+
+# Technology Stack
+
+## Backend
+
+| Category         | Technology     |
+| ---------------- | -------------- |
+| Language         | Python 3.13    |
+| Framework        | FastAPI        |
+| ORM              | SQLAlchemy 2.0 |
+| Database         | PostgreSQL 17  |
+| Migrations       | Alembic        |
+| Validation       | Pydantic v2    |
+| Authentication   | JWT            |
+| Password Hashing | Argon2         |
+| Package Manager  | uv             |
+| Testing          | Pytest         |
+| Coverage         | pytest-cov     |
+| Formatting       | Ruff           |
+| Linting          | Ruff           |
+| Dependency Audit | pip-audit      |
+| Git Hooks        | pre-commit     |
+| Infrastructure   | Docker         |
+| CI/CD            | GitHub Actions |
+
+## Frontend
+
+| Category     | Technology      |
+| ------------ | --------------- |
+| Language     | TypeScript      |
+| Framework    | React 19        |
+| Build Tool   | Vite            |
+| Routing      | React Router    |
+| Server State | TanStack Query  |
+| Forms        | React Hook Form |
+| Validation   | Zod             |
+| Client State | Zustand         |
+| HTTP Client  | Axios           |
+| Styling      | Tailwind CSS    |
+| Linting      | ESLint          |
+| Formatting   | Prettier        |
+
+---
+
+# Repository Structure
+
+Customer360 is organized as a multi-application engineering repository.
+
+```text
+customer360-platform/
+│
+├── apps/
+│   ├── api/                 # FastAPI backend
+│   └── web/                 # React frontend
+│
+├── docs/                    # Architecture and project documentation
+├── infra/                   # Infrastructure configuration
+├── scripts/                 # Development and automation scripts
+├── tests/                   # Repository-level tests
+│
+├── .github/                 # GitHub Actions
+├── CHANGELOG.md
+├── README.md
+└── LICENSE
+```
+
+The repository separates application code, infrastructure, testing, documentation, and automation concerns.
+
+---
+
+# Backend Structure
+
+The backend follows modular and layered organization.
+
+```text
+apps/api/
+│
+├── app/
+│   ├── core/
+│   ├── domain/
+│   ├── application/
+│   ├── infrastructure/
+│   └── entrypoints/
+│
+├── migrations/
+├── tests/
+├── pyproject.toml
+├── alembic.ini
+└── README.md
+```
+
+The exact implementation may evolve, but the architectural goal remains separation of business logic, application orchestration, infrastructure, and transport concerns.
+
+---
+
+# Getting Started
+
+## Prerequisites
+
+Install the following locally:
+
+* Python 3.13
+* Node.js
+* npm
+* Docker Desktop
+* Git
+
+The backend uses **uv** for Python dependency management.
+
+---
+
+## 1. Clone the Repository
+
+Using HTTPS:
+
+```bash
+git clone https://github.com/Mugheerik/customer360-platform.git
+```
+
+Or using SSH:
+
+```bash
+git clone git@github.com:Mugheerik/customer360-platform.git
+```
+
+Navigate into the project:
+
+```bash
+cd customer360-platform
+```
+
+---
+
+# 2. Start PostgreSQL
+
+Customer360 currently uses Docker for the PostgreSQL development database.
+
+Start PostgreSQL from the repository root:
+
+```bash
+docker compose up -d postgres
+```
+
+Verify that the container is running:
+
+```bash
+docker compose ps
+```
+
+The database is exposed locally on:
+
+```text
+localhost:5432
+```
+
+The development database configuration should point to the local PostgreSQL instance.
+
+Example:
+
+```env
+DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/customer360
+```
+
+Use your local `.env` file for environment-specific configuration.
+
+Do not commit real secrets to the repository.
+
+---
+
+# 3. Start the Backend
+
+Navigate to the API application:
+
+```bash
+cd apps/api
+```
+
+Install dependencies with uv:
+
+```bash
+uv sync
+```
+
+Create your local environment configuration if it does not already exist.
+
+Example:
+
+```env
+DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/customer360
+
+JWT_SECRET_KEY=replace-with-a-long-local-secret
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+APP_NAME=Customer360 API
+APP_VERSION=0.4.0
+DEBUG=true
+```
+
+Run database migrations:
+
+```bash
+uv run alembic upgrade head
+```
+
+Start the FastAPI development server:
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+The API will be available at:
+
+```text
+http://localhost:8000
+```
+
+FastAPI interactive API documentation is available at:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+# 4. Start the Frontend
+
+Open a second terminal.
+
+From the repository root:
+
+```bash
+cd apps/web
+```
+
+Install frontend dependencies:
+
+```bash
+npm install
+```
+
+Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+The web application will normally be available at:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# 5. Local Development Architecture
+
+After starting all three components, the local development environment looks like this:
+
+```text
+Browser
+   │
+   ▼
+React / Vite
+localhost:5173
+   │
+   │ HTTP
+   ▼
+FastAPI
+localhost:8000
+   │
+   │ PostgreSQL
+   ▼
+Docker PostgreSQL
+localhost:5432
+```
+
+The browser communicates with the API through `localhost:8000`.
+
+The API communicates with PostgreSQL through the local database connection configured in `DATABASE_URL`.
+
+---
+
+# 6. Run Tests
+
+From the API directory:
+
+```bash
+uv run pytest
+```
+
+Run tests with coverage:
+
+```bash
+uv run pytest --cov=app --cov-report=term-missing
+```
+
+---
+
+# 7. Run Code Quality Checks
+
+Format the backend:
+
+```bash
+uv run ruff format .
+```
+
+Check formatting:
+
+```bash
+uv run ruff format --check .
+```
+
+Run linting:
+
+```bash
+uv run ruff check .
+```
+
+Run dependency auditing:
+
+```bash
+uv run pip-audit
+```
+
+---
+
+# 8. Run Pre-Commit
+
+Install the configured hooks:
+
+```bash
+uv run pre-commit install
+```
+
+Run all hooks:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+---
+
+# 9. Database Migration Checks
+
+Check whether the database schema is synchronized with the migration history:
+
+```bash
+uv run alembic check
+```
+
+Apply pending migrations:
+
+```bash
+uv run alembic upgrade head
+```
 
 ---
 
 # Engineering Workflow
 
-Every platform capability follows the same workflow.
+Customer360 follows a repeatable engineering workflow:
 
-1. Define the business problem.
-2. Record architectural decisions (ADR when appropriate).
-3. Design the domain model and API contract.
-4. Implement the capability.
-5. Write automated tests.
-6. Run Ruff formatting.
-7. Run Ruff linting.
-8. Run dependency audit.
-9. Execute the complete test suite.
-10. Verify CI locally.
-11. Push and monitor GitHub Actions.
+```text
+Problem
+   │
+   ▼
+Design
+   │
+   ▼
+Implementation
+   │
+   ▼
+Automated Tests
+   │
+   ▼
+Formatting / Linting
+   │
+   ▼
+Dependency Audit
+   │
+   ▼
+Migration Validation
+   │
+   ▼
+CI
+   │
+   ▼
+Versioned Release
+```
 
-This workflow keeps engineering quality consistent as the platform evolves.
+Architectural decisions are recorded when they have long-term consequences, allowing the project to preserve both implementation knowledge and architectural reasoning.
+
+---
+
+# Engineering Standards
+
+Customer360 emphasizes engineering quality over feature volume.
+
+The project currently demonstrates:
+
+| Capability                    | Status |
+| ----------------------------- | ------ |
+| Modular Monolith              | ✅      |
+| Clean Architecture Principles | ✅      |
+| Dependency Injection          | ✅      |
+| Repository Pattern            | ✅      |
+| Service Layer                 | ✅      |
+| Transaction Boundaries        | ✅      |
+| JWT Authentication            | ✅      |
+| Role-Based Authorization      | ✅      |
+| Customer CRUD                 | ✅      |
+| Search                        | ✅      |
+| Filtering                     | ✅      |
+| Sorting                       | ✅      |
+| Pagination                    | ✅      |
+| Notes                         | ✅      |
+| Tasks                         | ✅      |
+| Activity Timeline             | ✅      |
+| Automated Testing             | ✅      |
+| Transaction Rollback Testing  | ✅      |
+| Database Migrations           | ✅      |
+| Ruff                          | ✅      |
+| Dependency Auditing           | ✅      |
+| pre-commit                    | ✅      |
+| GitHub Actions CI             | ✅      |
+| Semantic Versioning           | ✅      |
+| Verified Commits              | ✅      |
+| Dockerized PostgreSQL         | ✅      |
+
+---
+
+# Release History
+
+Customer360 evolves through versioned engineering milestones.
+
+| Version | Milestone                          | Status              |
+| ------- | ---------------------------------- | ------------------- |
+| v0.1.0  | Platform Foundation                | ✅ Complete          |
+| v0.2.0  | Identity & Security                | ✅ Complete          |
+| v0.3.0  | Customer Management Platform       | ✅ Complete          |
+| v0.4.x  | Engineering & Deployment Evolution | 🔄 Current          |
+| v1.0.0  | Production-Oriented Platform       | 🎯 Long-Term Target |
+
+Each release represents a meaningful engineering milestone rather than simply an accumulation of UI features.
+
+---
+
+# Current System
+
+The current Customer360 platform provides:
+
+```text
+Identity
+   │
+   ▼
+Authentication & Authorization
+   │
+   ▼
+Customer Management
+   │
+   ├── Customer Information
+   │
+   ├── Notes
+   │
+   ├── Tasks
+   │
+   └── Activity Timeline
+```
+
+The system is now sufficiently complete to demonstrate the core engineering foundations of a full-stack business application.
+
+---
+
+# Future Engineering Direction
+
+Future development may explore additional platform capabilities where they provide a clear engineering or product justification.
+
+Potential areas include:
+
+### Platform Engineering
+
+* Background processing
+* Scheduled jobs
+* Notifications
+* Audit capabilities
+* External integrations
+* Cloud deployment
+
+### Distributed Systems
+
+* Event-driven processing
+* Messaging infrastructure
+* Asynchronous workflows
+* Service integration patterns
+
+### Data & Analytics
+
+* Operational analytics
+* Customer analytics
+* Reporting
+* Data pipelines
+* Analytical data models
+
+### Intelligence
+
+* Customer segmentation
+* Recommendation systems
+* Predictive analytics
+* AI-assisted workflows
+* Intelligent customer operations
+
+Future technologies will be introduced where they solve a concrete system requirement rather than being added solely for technology coverage.
 
 ---
 
 # Documentation
 
-Documentation is considered part of the engineering process—not an afterthought.
-
-Customer360 maintains documentation alongside the source code to explain both **how** the platform works and **why** architectural decisions were made.
+Architecture and engineering documentation lives alongside the implementation.
 
 ```text
-customer360-platform/
-
-README.md
-CHANGELOG.md
-
 docs/
 │
 ├── architecture/
@@ -765,196 +1068,103 @@ docs/
 └── ...
 ```
 
-The documentation is organized into three areas:
+Documentation focuses on:
 
-| Area | Purpose |
-|------|---------|
-| Repository Documentation | Introduces the platform and explains its purpose. |
-| Architecture Documentation | Describes the system design and engineering decisions. |
-| Architecture Decision Records (ADRs) | Capture significant architectural decisions and the reasoning behind them. |
+* System architecture
+* Architectural decisions
+* Engineering practices
+* Project evolution
+* Development guidance
 
-As the platform grows, the documentation will evolve alongside the implementation, ensuring architectural knowledge remains part of the project rather than being lost over time.
-
-# Getting Started
-
-Customer360 is under active development.
-
-The repository is organized as a multi-application engineering workspace, with the API service serving as the current implementation of the platform.
-
-Clone the repository:
-
-```bash
-git clone git@github.com:Mugheerik/customer360-platform.git
-```
-
-Navigate to the project:
-
-```bash
-cd customer360-platform
-```
-
-The API service and local development instructions are available in:
-
-```text
-apps/api/README.md
-```
-The local development workflow includes:
-
-- Alembic database migrations
-- Automated testing
-- Ruff formatting and linting
-- Dependency auditing
-- Pre-commit Git hooks
-- GitHub Actions continuous integration
----
-
-# Current Status
-
-Customer360 has established its core backend foundation and is now building the web application layer for the platform.
-
-## Completed
-
-### ✅ Platform Foundation (v0.1.0)
-
-* FastAPI Application
-* PostgreSQL Integration
-* SQLAlchemy ORM
-* Alembic Migrations
-* Clean Architecture
-* Modular Monolith
-* Customer CRUD
-* Development Environment
+Architecture Decision Records are used for significant decisions where documenting the reasoning is valuable.
 
 ---
 
-### ✅ Identity & Security (v0.2.0)
+# What This Project Demonstrates
 
-* User Registration
-* JWT Authentication
+Customer360 is designed to demonstrate practical engineering capability across several areas.
+
+## Backend Engineering
+
+* Python
+* FastAPI
+* REST API design
+* Authentication
 * Authorization
-* Current User API
-* Role-Based Access Control
-* Global Exception Handling
-* Automated Testing
-* Continuous Integration
-* Semantic Versioning
-* Verified Commit Signing
+* Application services
+* Repository pattern
+* Dependency injection
+* Transaction management
+
+## Database Engineering
+
+* PostgreSQL
+* SQLAlchemy
+* Alembic
+* Relational modeling
+* Schema evolution
+* Transaction behavior
+
+## Frontend Engineering
+
+* React
+* TypeScript
+* Feature-oriented architecture
+* API integration
+* Server-state management
+* Form validation
+* Protected application flows
+
+## Software Engineering
+
+* Automated testing
+* Code quality
+* Dependency auditing
+* CI/CD
+* Version control
+* Semantic versioning
+* Release management
+
+## Platform Engineering Foundations
+
+* Modular architecture
+* Infrastructure configuration
+* Containerized development environments
+* CI automation
+* Reproducible database environments
+* Architectural evolution
 
 ---
 
-### ✅ Web Application Foundation
+# Project Philosophy
 
-* React + TypeScript
-* Vite Application
-* Tailwind CSS
-* Shared UI Component System
-* Application Layouts
-* Feature-Oriented Structure
-* Axios API Client
-* Authentication State Management
-* JWT Persistence
-* Protected Routes
-* Login → Dashboard Flow
-* Backend `/auth/me` Integration
+Customer360 is intentionally developed as an engineering laboratory rather than a framework showcase.
 
-## Current Milestone
+The project values:
 
-### 🚧 Customer Domain (v0.3.0)
+* Correctness over unnecessary complexity
+* Maintainability over premature optimization
+* Clear architecture over excessive abstraction
+* Tested behavior over feature volume
+* Reproducibility over manual configuration
+* Engineering reasoning over technology accumulation
 
-The next phase focuses on expanding the Customer Domain and building the first meaningful authenticated Customer360 experience.
-
-Planned objectives include:
-
-* Customer Dashboard
-* Enhanced Customer Services
-* Search & Filtering
-* Pagination
-* Customer Timeline
-* Improved Domain Validation
-* Repository Enhancements
-
----
-
-# Future Direction
-
-Customer360 is being developed as a long-term engineering platform.
-
-Future milestones will introduce reusable capabilities including:
-
-- Platform Services
-- Workflow Automation
-- Event-Driven Architecture
-- Analytics Services
-- Cloud-Native Infrastructure
-- AI-Assisted Business Systems
-
-Every milestone expands the platform while preserving architectural consistency and engineering quality.
+The goal is to build a system that is understandable, testable, and capable of evolving when real requirements justify that evolution.
 
 ---
 
 # Contributing
 
-Although Customer360 is currently maintained as a personal engineering project, it follows professional development practices.
+Customer360 is currently maintained as a personal engineering project, but it follows professional development practices.
 
-Every contribution should:
+Contributions should:
 
-- Follow the established architecture.
-- Include automated tests.
-- Pass Ruff formatting and linting.
-- Pass all CI checks.
-- Update documentation when necessary.
-- Preserve platform quality.
-
----
-
-# Documentation Roadmap
-
-Project documentation will continue to evolve alongside the platform.
-
-Current documentation includes:
-
-- Repository Overview
-- Platform Vision
-- Architecture Overview
-
-Planned documentation includes:
-
-- Architecture Decision Records (ADRs)
-- Platform Roadmap
-- CHANGELOG
-- System Architecture Documentation
-- API Documentation
-
----
-
-# Project Goals
-
-Customer360 exists for two complementary purposes.
-
-## Build a Real Platform
-
-Develop a reusable enterprise platform capable of supporting customer-centric business applications.
-
-## Practice Platform Engineering
-
-Continuously improve engineering skills in:
-
-- Software Architecture
-- Backend Engineering
-- Platform Engineering
-- Distributed Systems Concepts
-- Production Software Engineering
-- Cloud-Native Development
-
-The repository serves as both a functional software platform and a record of architectural growth.
-
----
-
-# Acknowledgements
-
-Customer360 is inspired by modern software engineering practices adopted across enterprise backend platforms and cloud-native systems.
-
-The project emphasizes maintainability, engineering discipline, and continuous learning over rapid feature delivery.
+* Follow the established architecture.
+* Include appropriate automated tests.
+* Maintain code quality standards.
+* Preserve database migration integrity.
+* Pass CI checks.
+* Update documentation when necessary.
 
 ---
 
@@ -970,10 +1180,8 @@ See the [LICENSE](LICENSE) file for details.
 
 ### Customer360
 
-**Enterprise Platform Engineering Laboratory**
+**Production-Oriented Customer Management Platform**
 
-*Building reusable platform capabilities through deliberate engineering.*
-
-**Every release should leave the platform more reusable, more observable, more testable, or more extensible than the previous one.**
+*Built as an engineering laboratory for backend, architecture, database, and platform engineering.*
 
 </div>
