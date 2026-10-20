@@ -27,6 +27,10 @@ logger = logging.getLogger(__name__)
 class CustomerService:
     """
     Business logic for customer operations.
+
+    Transaction ownership belongs to the service layer through
+    the UnitOfWork. A single business operation should normally
+    result in a single database commit.
     """
 
     def __init__(
@@ -41,18 +45,32 @@ class CustomerService:
     def create_customer(
         self,
         customer: CustomerCreate,
+        actor_id: str,
     ) -> Customer:
         logger.info(
             "Creating customer with email '%s'",
             customer.email,
         )
 
-        created_customer = self.customers.create(
-            customer,
-        )
-
         try:
+            created_customer = self.customers.create(
+                customer,
+            )
+
+            self.uow.flush()
+
+            self.activities.create(
+                ActivityCreate(
+                    entity_type=EntityType.CUSTOMER,
+                    entity_id=str(created_customer.id),
+                    action=ActivityAction.CREATED,
+                    actor_id=actor_id,
+                )
+            )
+
             self.uow.commit()
+            self.uow.refresh(created_customer)
+
         except IntegrityError as err:
             self.uow.rollback()
 
@@ -60,18 +78,15 @@ class CustomerService:
                 f"Customer with email '{customer.email}' already exists."
             ) from err
 
-        self.uow.refresh(created_customer)
+        except Exception:
+            self.uow.rollback()
 
-        self.activities.create(
-            ActivityCreate(
-                entity_type=EntityType.CUSTOMER,
-                entity_id=str(created_customer.id),
-                action=ActivityAction.CREATED,
+            logger.exception(
+                "Failed to create customer '%s'. Transaction rolled back.",
+                customer.email,
             )
-        )
 
-        self.uow.commit()
-        self.uow.refresh(created_customer)
+            raise
 
         logger.info(
             "Customer '%s' created successfully",
@@ -94,7 +109,9 @@ class CustomerService:
             query.size,
         )
 
-        result = self.customers.get_all(query)
+        result = self.customers.get_all(
+            query,
+        )
 
         logger.info(
             "Retrieved %d customers out of %d",
@@ -133,6 +150,7 @@ class CustomerService:
         self,
         customer_id: str,
         data: CustomerUpdate,
+        actor_id: str,
     ) -> Customer:
         customer = self.get_customer(
             customer_id,
@@ -148,11 +166,6 @@ class CustomerService:
             data,
         )
 
-        self.uow.commit()
-        self.uow.refresh(
-            updated_customer,
-        )
-
         self.activities.create(
             ActivityCreate(
                 entity_type=EntityType.CUSTOMER,
@@ -160,10 +173,23 @@ class CustomerService:
                     updated_customer.id,
                 ),
                 action=ActivityAction.UPDATED,
+                actor_id=actor_id,
             )
         )
 
-        self.uow.commit()
+        try:
+            self.uow.commit()
+
+        except Exception:
+            self.uow.rollback()
+
+            logger.exception(
+                "Failed to update customer '%s'",
+                customer_id,
+            )
+
+            raise
+
         self.uow.refresh(
             updated_customer,
         )
@@ -178,6 +204,7 @@ class CustomerService:
     def activate_customer(
         self,
         customer_id: str,
+        actor_id: str,
     ) -> Customer:
         customer = self.get_customer(
             customer_id,
@@ -188,34 +215,49 @@ class CustomerService:
             customer_id,
         )
 
-        customer = self.customers.activate(
+        updated_customer = self.customers.activate(
             customer,
         )
-
-        self.uow.commit()
-        self.uow.refresh(customer)
 
         self.activities.create(
             ActivityCreate(
                 entity_type=EntityType.CUSTOMER,
-                entity_id=str(customer.id),
+                entity_id=str(
+                    updated_customer.id,
+                ),
                 action=ActivityAction.ACTIVATED,
+                actor_id=actor_id,
             )
         )
 
-        self.uow.commit()
-        self.uow.refresh(customer)
+        try:
+            self.uow.commit()
+
+        except Exception:
+            self.uow.rollback()
+
+            logger.exception(
+                "Failed to activate customer '%s'",
+                customer_id,
+            )
+
+            raise
+
+        self.uow.refresh(
+            updated_customer,
+        )
 
         logger.info(
             "Customer '%s' activated",
             customer_id,
         )
 
-        return customer
+        return updated_customer
 
     def deactivate_customer(
         self,
         customer_id: str,
+        actor_id: str,
     ) -> Customer:
         customer = self.get_customer(
             customer_id,
@@ -226,30 +268,44 @@ class CustomerService:
             customer_id,
         )
 
-        customer = self.customers.deactivate(
+        updated_customer = self.customers.deactivate(
             customer,
         )
-
-        self.uow.commit()
-        self.uow.refresh(customer)
 
         self.activities.create(
             ActivityCreate(
                 entity_type=EntityType.CUSTOMER,
-                entity_id=str(customer.id),
+                entity_id=str(
+                    updated_customer.id,
+                ),
                 action=ActivityAction.DEACTIVATED,
+                actor_id=actor_id,
             )
         )
 
-        self.uow.commit()
-        self.uow.refresh(customer)
+        try:
+            self.uow.commit()
+
+        except Exception:
+            self.uow.rollback()
+
+            logger.exception(
+                "Failed to deactivate customer '%s'",
+                customer_id,
+            )
+
+            raise
+
+        self.uow.refresh(
+            updated_customer,
+        )
 
         logger.info(
             "Customer '%s' deactivated",
             customer_id,
         )
 
-        return customer
+        return updated_customer
 
     def get_customer_timeline(
         self,

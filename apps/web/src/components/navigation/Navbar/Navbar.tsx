@@ -51,12 +51,22 @@ export default function Navbar() {
               Logout
             </Button>
           ) : (
-            <Button
-              type="button"
-              onClick={() => navigate("/login")}
-            >
-              Sign In
-            </Button>
+            <>
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </Button>
+
+              <Button
+                type="button"
+                onClick={() => navigate("/login")}
+              >
+                Sign In
+              </Button>
+            </>
           )}
         </nav>
       </div>

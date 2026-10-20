@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import Button from "@/components/ui/button";
@@ -110,6 +111,16 @@ export default function LoginForm() {
           >
             {login.isPending ? "Signing in..." : "Sign in"}
           </Button>
+
+          <p className="text-center text-sm text-text-secondary">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/register"
+              className="font-medium text-primary hover:underline"
+            >
+              Create one
+            </Link>
+          </p>
         </form>
       </CardContent>
     </Card>

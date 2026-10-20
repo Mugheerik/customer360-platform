@@ -1,0 +1,528 @@
+diff --git a/apps/web/src/app/router/index.tsx b/apps/web/src/app/router/index.tsx
+index aa4b1dd..d8aa128 100644
+--- a/apps/web/src/app/router/index.tsx
++++ b/apps/web/src/app/router/index.tsx
+@@ -1,6 +1,7 @@
+ import { createBrowserRouter } from "react-router-dom";
+ 
+ import LoginPage from "@/features/auth/pages/LoginPage";
++import RegisterPage from "@/features/auth/pages/RegisterPage";
+ import CustomerDetailsPage from "@/features/customers/pages/CustomerDetailsPage";
+ import CustomersPage from "@/features/customers/pages/CustomersPage";
+ import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
+         path: "/login",
+         element: <LoginPage />,
+       },
++      {
++        path: "/register",
++        element: <RegisterPage />,
++      },
+     ],
+   },
+ 
+diff --git a/apps/web/src/components/navigation/Navbar/Navbar.tsx b/apps/web/src/components/navigation/Navbar/Navbar.tsx
+index 72eb28c..a034444 100644
+--- a/apps/web/src/components/navigation/Navbar/Navbar.tsx
++++ b/apps/web/src/components/navigation/Navbar/Navbar.tsx
+@@ -51,12 +51,22 @@ export default function Navbar() {
+               Logout
+             </Button>
+           ) : (
+-            <Button
+-              type="button"
+-              onClick={() => navigate("/login")}
+-            >
+-              Sign In
+-            </Button>
++            <>
++              <Button
++                variant="secondary"
++                type="button"
++                onClick={() => navigate("/register")}
++              >
++                Register
++              </Button>
++
++              <Button
++                type="button"
++                onClick={() => navigate("/login")}
++              >
++                Sign In
++              </Button>
++            </>
+           )}
+         </nav>
+       </div>
+diff --git a/apps/web/src/features/auth/components/LoginForm.tsx b/apps/web/src/features/auth/components/LoginForm.tsx
+index b3643d8..5b6b1ac 100644
+--- a/apps/web/src/features/auth/components/LoginForm.tsx
++++ b/apps/web/src/features/auth/components/LoginForm.tsx
+@@ -1,4 +1,5 @@
+ import { useForm } from "react-hook-form";
++import { Link } from "react-router-dom";
+ import { zodResolver } from "@hookform/resolvers/zod";
+ 
+ import Button from "@/components/ui/button";
+@@ -110,6 +111,16 @@ export default function LoginForm() {
+           >
+             {login.isPending ? "Signing in..." : "Sign in"}
+           </Button>
++
++          <p className="text-center text-sm text-text-secondary">
++            Don&apos;t have an account?{" "}
++            <Link
++              to="/register"
++              className="font-medium text-primary hover:underline"
++            >
++              Create one
++            </Link>
++          </p>
+         </form>
+       </CardContent>
+     </Card>
+diff --git a/apps/web/src/features/auth/components/RegisterForm.tsx b/apps/web/src/features/auth/components/RegisterForm.tsx
+new file mode 100644
+index 0000000..12b5770
+--- /dev/null
++++ b/apps/web/src/features/auth/components/RegisterForm.tsx
+@@ -0,0 +1,200 @@
++import { useForm } from "react-hook-form";
++import { zodResolver } from "@hookform/resolvers/zod";
++import { isAxiosError } from "axios";
++import { Link } from "react-router-dom";
++
++import Button from "@/components/ui/button";
++import Card, {
++  CardContent,
++  CardHeader,
++} from "@/components/ui/card";
++import Input from "@/components/ui/input";
++import { Body, H2 } from "@/components/ui/typography";
++import { useRegister } from "@/hooks/useRegister";
++
++import {
++  registerSchema,
++  type RegisterFormData,
++} from "../schemas/register.schema";
++
++function getErrorMessage(error: unknown): string {
++  if (isAxiosError(error)) {
++    if (error.response?.status === 409) {
++      return "An account with this email or username already exists.";
++    }
++
++    if (error.response?.status === 422) {
++      return "Please check the information you entered and try again.";
++    }
++  }
++
++  return "Unable to create your account. Please try again.";
++}
++
++type FieldProps = {
++  id: keyof RegisterFormData;
++  label: string;
++  type?: string;
++  autoComplete?: string;
++  placeholder?: string;
++  error?: string;
++  registration: ReturnType<
++    ReturnType<typeof useForm<RegisterFormData>>["register"]
++  >;
++};
++
++function Field({
++  id,
++  label,
++  type = "text",
++  autoComplete,
++  placeholder,
++  error,
++  registration,
++}: FieldProps) {
++  return (
++    <div>
++      <label
++        htmlFor={id}
++        className="mb-2 block text-sm font-medium text-text"
++      >
++        {label}
++      </label>
++
++      <Input
++        id={id}
++        type={type}
++        autoComplete={autoComplete}
++        placeholder={placeholder}
++        {...registration}
++      />
++
++      {error ? (
++        <p className="mt-1.5 text-sm text-danger">{error}</p>
++      ) : null}
++    </div>
++  );
++}
++
++export default function RegisterForm() {
++  const registerUser = useRegister();
++
++  const {
++    register,
++    handleSubmit,
++    formState: { errors },
++  } = useForm<RegisterFormData>({
++    resolver: zodResolver(registerSchema),
++    defaultValues: {
++      firstName: "",
++      lastName: "",
++      username: "",
++      email: "",
++      password: "",
++      confirmPassword: "",
++    },
++  });
++
++  const onSubmit = (data: RegisterFormData) => {
++    registerUser.mutate(data);
++  };
++
++  return (
++    <Card className="w-full max-w-md">
++      <CardHeader>
++        <H2 className="text-2xl">Create your account</H2>
++
++        <Body className="mt-2">
++          Register to start managing customers with Customer360.
++        </Body>
++      </CardHeader>
++
++      <CardContent>
++        <form
++          onSubmit={handleSubmit(onSubmit)}
++          className="space-y-5"
++        >
++          <div className="grid gap-5 sm:grid-cols-2">
++            <Field
++              id="firstName"
++              label="First name"
++              autoComplete="given-name"
++              error={errors.firstName?.message}
++              registration={register("firstName")}
++            />
++
++            <Field
++              id="lastName"
++              label="Last name"
++              autoComplete="family-name"
++              error={errors.lastName?.message}
++              registration={register("lastName")}
++            />
++          </div>
++
++          <Field
++            id="username"
++            label="Username"
++            autoComplete="username"
++            error={errors.username?.message}
++            registration={register("username")}
++          />
++
++          <Field
++            id="email"
++            label="Email"
++            type="email"
++            autoComplete="email"
++            placeholder="you@example.com"
++            error={errors.email?.message}
++            registration={register("email")}
++          />
++
++          <Field
++            id="password"
++            label="Password"
++            type="password"
++            autoComplete="new-password"
++            error={errors.password?.message}
++            registration={register("password")}
++          />
++
++          <Field
++            id="confirmPassword"
++            label="Confirm password"
++            type="password"
++            autoComplete="new-password"
++            error={errors.confirmPassword?.message}
++            registration={register("confirmPassword")}
++          />
++
++          {registerUser.isError ? (
++            <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">
++              {getErrorMessage(registerUser.error)}
++            </p>
++          ) : null}
++
++          <Button
++            type="submit"
++            className="w-full"
++            disabled={registerUser.isPending}
++          >
++            {registerUser.isPending
++              ? "Creating account..."
++              : "Create account"}
++          </Button>
++
++          <p className="text-center text-sm text-text-secondary">
++            Already have an account?{" "}
++            <Link
++              to="/login"
++              className="font-medium text-primary hover:underline"
++            >
++              Sign in
++            </Link>
++          </p>
++        </form>
++      </CardContent>
++    </Card>
++  );
++}
+diff --git a/apps/web/src/features/auth/pages/RegisterPage.tsx b/apps/web/src/features/auth/pages/RegisterPage.tsx
+new file mode 100644
+index 0000000..6595734
+--- /dev/null
++++ b/apps/web/src/features/auth/pages/RegisterPage.tsx
+@@ -0,0 +1,14 @@
++import Container from "@/components/ui/container";
++import Section from "@/components/ui/section";
++
++import RegisterForm from "../components/RegisterForm";
++
++export default function RegisterPage() {
++  return (
++    <Section className="min-h-[calc(100vh-4rem)] bg-surface">
++      <Container className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-10">
++        <RegisterForm />
++      </Container>
++    </Section>
++  );
++}
+diff --git a/apps/web/src/features/auth/schemas/register.schema.ts b/apps/web/src/features/auth/schemas/register.schema.ts
+new file mode 100644
+index 0000000..7c84207
+--- /dev/null
++++ b/apps/web/src/features/auth/schemas/register.schema.ts
+@@ -0,0 +1,40 @@
++import { z } from "zod";
++
++export const registerSchema = z
++  .object({
++    firstName: z
++      .string()
++      .trim()
++      .min(1, "First name is required")
++      .max(100, "First name must be at most 100 characters"),
++
++    lastName: z
++      .string()
++      .trim()
++      .min(1, "Last name is required")
++      .max(100, "Last name must be at most 100 characters"),
++
++    username: z
++      .string()
++      .trim()
++      .min(3, "Username must be at least 3 characters")
++      .max(50, "Username must be at most 50 characters"),
++
++    email: z
++      .string()
++      .trim()
++      .email("Please enter a valid email address"),
++
++    password: z
++      .string()
++      .min(8, "Password must be at least 8 characters")
++      .max(128, "Password must be at most 128 characters"),
++
++    confirmPassword: z.string(),
++  })
++  .refine((data) => data.password === data.confirmPassword, {
++    message: "Passwords do not match",
++    path: ["confirmPassword"],
++  });
++
++export type RegisterFormData = z.infer<typeof registerSchema>;
+diff --git a/apps/web/src/features/home/components/Hero/Hero.tsx b/apps/web/src/features/home/components/Hero/Hero.tsx
+index 1b80cea..19d7e92 100644
+--- a/apps/web/src/features/home/components/Hero/Hero.tsx
++++ b/apps/web/src/features/home/components/Hero/Hero.tsx
+@@ -1,9 +1,19 @@
++import { useNavigate } from "react-router-dom";
++
+ import Container from "@/components/ui/container";
+ import Section from "@/components/ui/section";
+ import { H1, Lead } from "@/components/ui/typography";
+ import Button from "@/components/ui/button";
++import { env } from "@/lib/env";
++import { useAuthStore } from "@/store/auth.store";
+ 
+ export default function Hero() {
++  const navigate = useNavigate();
++
++  const isAuthenticated = useAuthStore(
++    (state) => state.isAuthenticated,
++  );
++
+   return (
+     <Section className="flex min-h-[80vh] items-center">
+       <Container>
+@@ -15,11 +25,22 @@ export default function Hero() {
+           </Lead>
+ 
+           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+-            <Button>
++            <Button
++              type="button"
++              onClick={() =>
++                navigate(isAuthenticated ? "/dashboard" : "/register")
++              }
++            >
+               Get Started
+             </Button>
+ 
+-            <Button variant="secondary">
++            <Button
++              type="button"
++              variant="secondary"
++              onClick={() =>
++                window.open(env.apiDocsUrl, "_blank", "noopener,noreferrer")
++              }
++            >
+               Documentation
+             </Button>
+           </div>
+diff --git a/apps/web/src/features/home/components/cta/CTA.tsx b/apps/web/src/features/home/components/cta/CTA.tsx
+index 7dbf20d..41a5a7a 100644
+--- a/apps/web/src/features/home/components/cta/CTA.tsx
++++ b/apps/web/src/features/home/components/cta/CTA.tsx
+@@ -1,9 +1,19 @@
++import { useNavigate } from "react-router-dom";
++
+ import Button from "@/components/ui/button";
+ import Container from "@/components/ui/container";
+ import Section from "@/components/ui/section";
+ import { Body, H2 } from "@/components/ui/typography";
++import { env } from "@/lib/env";
++import { useAuthStore } from "@/store/auth.store";
+ 
+ export default function CTA() {
++  const navigate = useNavigate();
++
++  const isAuthenticated = useAuthStore(
++    (state) => state.isAuthenticated,
++  );
++
+   return (
+     <Section className="bg-text">
+       <Container className="py-16 text-center">
+@@ -18,13 +28,22 @@ export default function CTA() {
+         </Body>
+ 
+         <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+-          <Button >
++          <Button
++            type="button"
++            onClick={() =>
++              navigate(isAuthenticated ? "/dashboard" : "/register")
++            }
++          >
+             Get Started
+           </Button>
+ 
+           <Button
++            type="button"
+             variant="ghost"
+             className="text-white hover:bg-white/10"
++            onClick={() =>
++              window.open(env.apiDocsUrl, "_blank", "noopener,noreferrer")
++            }
+           >
+             Documentation
+           </Button>
+diff --git a/apps/web/src/hooks/useRegister.ts b/apps/web/src/hooks/useRegister.ts
+new file mode 100644
+index 0000000..bf025f4
+--- /dev/null
++++ b/apps/web/src/hooks/useRegister.ts
+@@ -0,0 +1,41 @@
++import { useMutation } from "@tanstack/react-query";
++import { useNavigate } from "react-router-dom";
++
++import type { RegisterFormData } from "@/features/auth/schemas/register.schema";
++import { AuthService } from "@/services/auth.service";
++import { useAuthStore } from "@/store/auth.store";
++
++export function useRegister() {
++  const navigate = useNavigate();
++
++  const setToken = useAuthStore((state) => state.setToken);
++  const setUser = useAuthStore((state) => state.setUser);
++
++  return useMutation({
++    mutationFn: async (data: RegisterFormData) => {
++      await AuthService.register({
++        email: data.email,
++        username: data.username,
++        password: data.password,
++        first_name: data.firstName,
++        last_name: data.lastName,
++      });
++
++      // Sign the new user in immediately.
++      return AuthService.login({
++        email: data.email,
++        password: data.password,
++      });
++    },
++
++    onSuccess: async (token) => {
++      setToken(token);
++
++      const user = await AuthService.me();
++
++      setUser(user);
++
++      navigate("/dashboard", { replace: true });
++    },
++  });
++}
+diff --git a/apps/web/src/lib/env.ts b/apps/web/src/lib/env.ts
+index 082e649..f052234 100644
+--- a/apps/web/src/lib/env.ts
++++ b/apps/web/src/lib/env.ts
+@@ -2,6 +2,10 @@ const API_BASE_URL =
+   import.meta.env.VITE_API_BASE_URL ??
+   "http://localhost:8000/api/v1";
+ 
++// FastAPI serves interactive API documentation at /docs on the API origin.
++const API_DOCS_URL = new URL("/docs", API_BASE_URL).toString();
++
+ export const env = {
+   apiBaseUrl: API_BASE_URL,
++  apiDocsUrl: API_DOCS_URL,
+ } as const;
+\ No newline at end of file
+diff --git a/apps/web/src/services/auth.service.ts b/apps/web/src/services/auth.service.ts
+index 6e17518..f049772 100644
+--- a/apps/web/src/services/auth.service.ts
++++ b/apps/web/src/services/auth.service.ts
+@@ -10,6 +10,8 @@ export interface RegisterCredentials {
+   username: string;
+   email: string;
+   password: string;
++  first_name: string;
++  last_name: string;
+ }
+ 
+ export const AuthService = {

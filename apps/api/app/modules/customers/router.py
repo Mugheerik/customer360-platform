@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.core.security.dependencies import get_current_user
 from app.database.dependencies import get_db
 from app.modules.activity.schemas import ActivityResponse
 from app.modules.customers.queries import CustomerQueryParams
@@ -11,6 +12,7 @@ from app.modules.customers.schemas import (
     CustomerUpdate,
 )
 from app.modules.customers.service import CustomerService
+from app.modules.users.models import User
 
 router = APIRouter(
     prefix="/customers",
@@ -31,12 +33,16 @@ def get_customer_service(
 )
 def create_customer(
     customer: CustomerCreate,
+    current_user: User = Depends(get_current_user),
     service: CustomerService = Depends(
         get_customer_service,
     ),
 ) -> CustomerResponse:
     return CustomerResponse.model_validate(
-        service.create_customer(customer),
+        service.create_customer(
+            customer,
+            actor_id=str(current_user.id),
+        ),
     )
 
 
@@ -100,6 +106,7 @@ def get_customer_timeline(
 def update_customer(
     customer_id: str,
     customer: CustomerUpdate,
+    current_user: User = Depends(get_current_user),
     service: CustomerService = Depends(
         get_customer_service,
     ),
@@ -107,6 +114,7 @@ def update_customer(
     updated_customer = service.update_customer(
         customer_id,
         customer,
+        actor_id=str(current_user.id),
     )
 
     return CustomerResponse.model_validate(
@@ -120,12 +128,14 @@ def update_customer(
 )
 def activate_customer(
     customer_id: str,
+    current_user: User = Depends(get_current_user),
     service: CustomerService = Depends(
         get_customer_service,
     ),
 ) -> CustomerResponse:
     customer = service.activate_customer(
         customer_id,
+        actor_id=str(current_user.id),
     )
 
     return CustomerResponse.model_validate(
@@ -139,12 +149,14 @@ def activate_customer(
 )
 def deactivate_customer(
     customer_id: str,
+    current_user: User = Depends(get_current_user),
     service: CustomerService = Depends(
         get_customer_service,
     ),
 ) -> CustomerResponse:
     customer = service.deactivate_customer(
         customer_id,
+        actor_id=str(current_user.id),
     )
 
     return CustomerResponse.model_validate(

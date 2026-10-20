@@ -24,6 +24,13 @@ logger = logging.getLogger(__name__)
 class TaskService:
     """
     Business logic for customer tasks.
+
+    Transaction ownership belongs to the service layer through
+    the UnitOfWork.
+
+    A task mutation and its corresponding activity log are treated
+    as one atomic business operation. If activity creation fails,
+    the task mutation is rolled back as well.
     """
 
     def __init__(
@@ -56,27 +63,38 @@ class TaskService:
             customer_id,
         )
 
-        created_task = self.tasks.create(
-            customer_id,
-            task,
-        )
-
-        self.activities.create(
-            ActivityCreate(
-                entity_type=EntityType.CUSTOMER,
-                entity_id=customer_id,
-                action=ActivityAction.UPDATED,
-                actor_id=actor_id,
-                details={
-                    "event": "task_created",
-                    "task_id": created_task.id,
-                    "title": created_task.title,
-                },
+        try:
+            created_task = self.tasks.create(
+                customer_id,
+                task,
             )
-        )
 
-        self.uow.commit()
-        self.uow.refresh(created_task)
+            self.activities.create(
+                ActivityCreate(
+                    entity_type=EntityType.CUSTOMER,
+                    entity_id=customer_id,
+                    action=ActivityAction.UPDATED,
+                    actor_id=actor_id,
+                    details={
+                        "event": "task_created",
+                        "task_id": created_task.id,
+                        "title": created_task.title,
+                    },
+                )
+            )
+
+            self.uow.commit()
+            self.uow.refresh(created_task)
+
+        except Exception:
+            self.uow.rollback()
+
+            logger.exception(
+                "Failed to create task for customer '%s'. Transaction rolled back.",
+                customer_id,
+            )
+
+            raise
 
         logger.info(
             "Task '%s' created for customer '%s'",
@@ -131,27 +149,40 @@ class TaskService:
             customer_id,
         )
 
-        updated_task = self.tasks.update(
-            task,
-            data,
-        )
-
-        self.activities.create(
-            ActivityCreate(
-                entity_type=EntityType.CUSTOMER,
-                entity_id=customer_id,
-                action=ActivityAction.UPDATED,
-                actor_id=actor_id,
-                details={
-                    "event": "task_updated",
-                    "task_id": updated_task.id,
-                    "title": updated_task.title,
-                },
+        try:
+            updated_task = self.tasks.update(
+                task,
+                data,
             )
-        )
 
-        self.uow.commit()
-        self.uow.refresh(updated_task)
+            self.activities.create(
+                ActivityCreate(
+                    entity_type=EntityType.CUSTOMER,
+                    entity_id=customer_id,
+                    action=ActivityAction.UPDATED,
+                    actor_id=actor_id,
+                    details={
+                        "event": "task_updated",
+                        "task_id": updated_task.id,
+                        "title": updated_task.title,
+                    },
+                )
+            )
+
+            self.uow.commit()
+            self.uow.refresh(updated_task)
+
+        except Exception:
+            self.uow.rollback()
+
+            logger.exception(
+                "Failed to update task '%s' for customer '%s'. "
+                "Transaction rolled back.",
+                task_id,
+                customer_id,
+            )
+
+            raise
 
         logger.info(
             "Task '%s' updated successfully",
@@ -184,25 +215,35 @@ class TaskService:
             customer_id,
         )
 
-        self.tasks.delete(task)
-
-        self.activities.create(
-            ActivityCreate(
-                entity_type=EntityType.CUSTOMER,
-                entity_id=customer_id,
-                action=ActivityAction.UPDATED,
-                actor_id=actor_id,
-                details={
-                    "event": "task_deleted",
-                    "task_id": task_id,
-                    "title": task_title,
-                },
+        try:
+            self.tasks.delete(
+                task,
             )
-        )
 
-        self.uow.commit()
+            self.activities.create(
+                ActivityCreate(
+                    entity_type=EntityType.CUSTOMER,
+                    entity_id=customer_id,
+                    action=ActivityAction.UPDATED,
+                    actor_id=actor_id,
+                    details={
+                        "event": "task_deleted",
+                        "task_id": task_id,
+                        "title": task_title,
+                    },
+                )
+            )
 
-        logger.info(
-            "Task '%s' deleted successfully",
-            task_id,
-        )
+            self.uow.commit()
+
+        except Exception:
+            self.uow.rollback()
+
+            logger.exception(
+                "Failed to delete task '%s' for customer '%s'. "
+                "Transaction rolled back.",
+                task_id,
+                customer_id,
+            )
+
+            raise

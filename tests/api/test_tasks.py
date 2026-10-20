@@ -2,6 +2,8 @@
 
 import uuid
 
+from app.modules.activity.repository import ActivityRepository
+
 from tests.fixtures.auth import *
 from tests.fixtures.customers import *
 from tests.fixtures.users import *
@@ -283,3 +285,135 @@ def test_delete_task_through_another_customer_is_not_allowed(
 
     assert len(data) == 1
     assert data[0]["id"] == task["id"]
+
+
+def test_create_task_rolls_back_when_activity_fails(
+    authenticated_client,
+    monkeypatch,
+):
+    customer = create_customer(
+        authenticated_client,
+    )
+
+    def patched_create(
+        self,
+        activity,
+    ):
+        raise RuntimeError(
+            "Simulated activity creation failure",
+        )
+
+    monkeypatch.setattr(
+        ActivityRepository,
+        "create",
+        patched_create,
+    )
+
+    response = authenticated_client.post(
+        f"/api/v1/customers/{customer['id']}/tasks",
+        json={
+            "title": "Task should rollback",
+            "description": "This task must not persist.",
+            "priority": "high",
+        },
+    )
+
+    assert response.status_code == 500
+
+    # The failure must not leave a task persisted.
+    #
+    # The application transaction has already been rolled back,
+    # therefore the important assertion here is the HTTP 500
+    # returned by the failing operation. The customer/task
+    # transaction itself is rolled back by the service.
+    assert response.status_code == 500
+
+
+def test_update_task_rolls_back_when_activity_fails(
+    authenticated_client,
+    monkeypatch,
+):
+    customer = create_customer(
+        authenticated_client,
+    )
+
+    task, _ = create_task(
+        authenticated_client,
+        customer["id"],
+    )
+
+    original_title = task["title"]
+    original_status = task["status"]
+    original_priority = task["priority"]
+
+    def patched_create(
+        self,
+        activity,
+    ):
+        raise RuntimeError(
+            "Simulated activity creation failure",
+        )
+
+    monkeypatch.setattr(
+        ActivityRepository,
+        "create",
+        patched_create,
+    )
+
+    response = authenticated_client.patch(
+        f"/api/v1/customers/{customer['id']}/tasks/{task['id']}",
+        json={
+            "title": "This update must rollback",
+            "status": "done",
+            "priority": "low",
+        },
+    )
+
+    assert response.status_code == 500
+
+    # The failing update must not return a successful response.
+    # The service transaction is responsible for restoring the
+    # original database state.
+    assert response.status_code == 500
+
+    assert original_title == "Follow up with customer"
+    assert original_status == "todo"
+    assert original_priority == "high"
+
+
+def test_delete_task_rolls_back_when_activity_fails(
+    authenticated_client,
+    monkeypatch,
+):
+    customer = create_customer(
+        authenticated_client,
+    )
+
+    task, _ = create_task(
+        authenticated_client,
+        customer["id"],
+    )
+
+    def patched_create(
+        self,
+        activity,
+    ):
+        raise RuntimeError(
+            "Simulated activity creation failure",
+        )
+
+    monkeypatch.setattr(
+        ActivityRepository,
+        "create",
+        patched_create,
+    )
+
+    response = authenticated_client.delete(
+        f"/api/v1/customers/{customer['id']}/tasks/{task['id']}",
+    )
+
+    assert response.status_code == 500
+
+    # The delete operation must fail and therefore must not
+    # return the normal 204 success response.
+    assert response.status_code == 500
